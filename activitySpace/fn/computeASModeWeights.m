@@ -1,4 +1,4 @@
-function weights = computeASModeWeights(psth_t_u_tr, trials1, trials2, tint1, tint2, psth_t_vector, mintrials_for_modeweights)
+function weights = computeASModeWeights(psth_t_u_tr, trials1, trials2, tint1, tint2, psth_t_vector, mintrials_modeweights)
 
 
 %set 1 - trial average and variance, for the specified time-interval for all units
@@ -15,7 +15,7 @@ set2var =  squeeze(nanvar(set2,[], 2));
 unit_trials2 = sum(~isnan(set2),2);
 
 % selects only units that have enough trials, for determining the coding direction
-usable = unit_trials1 > mintrials_for_modeweights & unit_trials2 > mintrials_for_modeweights;
+usable = unit_trials1 > mintrials_modeweights & unit_trials2 > mintrials_modeweights;
 weights = (set1avg - set2avg)./sqrt(set1var+set2var);
 weights(~usable) = NaN;
 weights(set1var+set2var<1e-9) = NaN;

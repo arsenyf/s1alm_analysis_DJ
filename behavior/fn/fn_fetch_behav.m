@@ -1,11 +1,11 @@
 function [trial_type_names, b] = fn_fetch_behav(dj_query)
 trial_type_names = unique(fetchn(dj_query,'trial_type_name', 'ORDER BY trial_type_num'));
-inclusion_behav_mintrials =fetch1(ANL.Parameters & 'parameter_name="inclusion_behav_mintrials"','parameter_value');
+mintrials_behav_typeoutcome =fetch1(ANL.Parameters & 'parameter_name="mintrials_behav_typeoutcome"','parameter_value');
 
 for i_n=1:1:numel(trial_type_names)
     k=[];
     k.trial_type_name = trial_type_names{i_n};
-    idx_enough_trials = fetchn(dj_query & k, 'total_noignore_noearly', 'ORDER BY session_uid')>=inclusion_behav_mintrials;
+    idx_enough_trials = fetchn(dj_query & k, 'total_noignore_noearly', 'ORDER BY session_uid')>=mintrials_behav_typeoutcome;
     b.prcnt_hit(i_n)=  get_field_mean_and_stem (dj_query, k, 'prcnt_hit',idx_enough_trials);
     b.prcnt_hit_outof_noignore (i_n) =  get_field_mean_and_stem (dj_query, k, 'prcnt_hit_outof_noignore',idx_enough_trials);
     b.prcnt_hit_outof_noignore_noearly (i_n) =  get_field_mean_and_stem (dj_query, k, 'prcnt_hit_outof_noignore_noearly',idx_enough_trials);

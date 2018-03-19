@@ -22,7 +22,7 @@ histogram(peak_fr_basic_trials,[0:0.1:10])
 mean_fr = fetchn(ANL.UnitFiringRate,'mean_fr');
 histogram(mean_fr,[0:0.1:5])
 
-mean_fr_sample_delay = fetchn(ANL.UnitFiringRate * (EPHYS.UnitCellType & 'cell_type="FS"'),'mean_fr_sample_delay');
-histogram(mean_fr_sample_delay,[0:0.1:100])
+mean_fr_sample_delay = fetchn(ANL.UnitFiringRate,'mean_fr_sample_delay');
+histogram(mean_fr_sample_delay,[0:0.1:5])
 
-peak_fr_basic_trials = fetchn(ANL.UnitFiringRate * EPHYS.Unit,'waveform','ORDER BY unit_uid');
+peak_fr_basic_trials = fetchn(ANL.UnitFiringRate * EPHYS.Unit,'peak_fr_basic_trials',);

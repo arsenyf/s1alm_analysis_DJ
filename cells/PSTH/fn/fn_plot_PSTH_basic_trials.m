@@ -19,9 +19,9 @@ time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
 psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
 smooth_time = Param.parameter_value{(strcmp('smooth_time_cell_psth',Param.parameter_name))};
 smooth_bins=ceil(smooth_time/psth_time_bin);
-mintrials_for_psth= Param.parameter_value{(strcmp('mintrials_for_psth',Param.parameter_name))};
+mintrials_psth_typeoutcome= Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
 
-idx_few_trials = find(PSTH.num_trials_averaged <mintrials_for_psth);
+idx_few_trials = find(PSTH.num_trials_averaged <mintrials_psth_typeoutcome);
 
 plot([t_go t_go], sz, 'k-','LineWidth',2);
 plot([t_chirp1 t_chirp1], sz, 'k--','LineWidth',0.75);

@@ -4,7 +4,7 @@ function behv_population()
 close all;
 
 dir_save_figure ='Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\Results\Behavior\performance\';
-inclusion_behav_mintrials =fetch1(ANL.Parameters & 'parameter_name="inclusion_behav_mintrials"','parameter_value');
+mintrials_behav_typeoutcome =fetch1(ANL.Parameters & 'parameter_name="mintrials_behav_typeoutcome"','parameter_value');
 
 % populate(ANL.SessionBehavPerformance);
 
@@ -60,7 +60,7 @@ for i_n=1:1:numel(trial_type_names)
     end
     
     
-    idx_enough_trials = fetchn(btt & k, 'total_noignore_noearly', 'ORDER BY session_uid')>=inclusion_behav_mintrials;
+    idx_enough_trials = fetchn(btt & k, 'total_noignore_noearly', 'ORDER BY session_uid')>=mintrials_behav_typeoutcome;
     %% Fetching
     prcnt_hit(i_n)=  get_field_mean_and_stem (btt, k, 'prcnt_hit',idx_enough_trials);
     prcnt_hit_outof_noignore_noearly (i_n) =  get_field_mean_and_stem (btt, k, 'prcnt_hit_outof_noignore_noearly',idx_enough_trials);
