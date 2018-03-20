@@ -114,7 +114,7 @@ ylim([0 50]);
 %% Expert on Mini distractors
 % Fetching
 %--------------------------------------
-b_query= (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment  & 'task_protocol in (2,5,7,8,9)' & 'training_type="regular + distractor"' & 'session_comment="good behavior"');
+b_query= (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment  & 'task_protocol in (2,5,7,8,9)' & 'training_type="distractor"' & 'session_comment="good behavior"');
 n_mice = numel(unique(fetchn(b_query,'subject_id')));
 clear trial_type_names  b
 [trial_type_names, b] = fn_fetch_behav(b_query);
@@ -153,8 +153,8 @@ ylim([0 50]);
 %% Expert on Full distractors
 % Fetching
 %--------------------------------------
-% b_query= (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment  & 'task_protocol in (4,6,3,2,5,7,8,9)' & 'training_type="regular + distractor"' & 'session_comment="good behavior"');
-b_query= (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment  & 'task_protocol in (4,6)' & 'training_type="regular + distractor"' & 'session_comment="good behavior"');
+% b_query= (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment  & 'task_protocol in (4,6,3,2,5,7,8,9)' & 'training_type="distractor"' & 'session_comment="good behavior"');
+b_query= (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment  & 'task_protocol in (4,6)' & 'training_type="distractor"' & 'session_comment="good behavior"');
 n_mice = numel(unique(fetchn(b_query,'subject_id')));
 clear trial_type_names  b
 [trial_type_names, b] = fn_fetch_behav(b_query);

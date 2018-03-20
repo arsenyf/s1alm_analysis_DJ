@@ -48,8 +48,12 @@ if ~isempty(PSTH)
     plot([t_chirp1 t_chirp1], sz, 'k--','LineWidth',0.75);
     plot([t_chirp2 t_chirp2], sz, 'k--','LineWidth',0.75);
     
+    blank=zeros(size(PSTH.trial_type_name));
+    blank(idx_few_trials)=NaN;
+%     p(3).psth=smooth(PSTH.psth_avg(p(3).idx,:),smooth_bins) + blank(3);
+
     for itype = 1:1:size(PSTH.trial_type_name,1)
-        psth_smooth = smooth(PSTH.psth_avg(itype,:),smooth_bins);
+        psth_smooth = smooth(PSTH.psth_avg(itype,:),smooth_bins) + blank(itype);
         plot(time,psth_smooth, 'Color', PSTH.trialtype_rgb(itype,:), 'LineWidth', 1.5);
     end
     

@@ -44,14 +44,14 @@ fn_plot_CD_rotation(time,r);
 title(sprintf('%s  mice \n \n %s %s \n', 'Regular', key.brain_area, key.hemisphere), 'FontSize',14);
 
 % Expert mice
-key.training_type ='regular + distractor';
+key.training_type ='distractor';
 r = fetch1 (rel & key ,'avg_mode_mat_t_weights_corr');
 axes('position',[position_x(2), position_y(1), panel_width, panel_height]);
 fn_plot_CD_rotation(time,r);
 title(sprintf('%s  mice \n \n %s %s \n', 'Expert', key.brain_area, key.hemisphere), 'FontSize',14);
 
 % Regular & Expert mice
-key.training_type ='regular or regular + distractor';
+key.training_type ='all';
 r = fetch1 (rel & key ,'avg_mode_mat_t_weights_corr');
 axes('position',[position_x(3), position_y(1), panel_width, panel_height]);
 fn_plot_CD_rotation(time,r);
@@ -71,14 +71,14 @@ fn_plot_CD_rotation(time,r);
 title(sprintf('\n %s %s \n',key.brain_area, key.hemisphere), 'FontSize',14);
 
 % Expert mice
-key.training_type ='regular + distractor';
+key.training_type ='distractor';
 r = fetch1 (rel & key ,'avg_mode_mat_t_weights_corr');
 axes('position',[position_x(2), position_y(2), panel_width, panel_height]);
 fn_plot_CD_rotation(time,r);
 title(sprintf('\n %s %s \n',  key.brain_area, key.hemisphere), 'FontSize',14);
 
 % Regular & Expert mice
-key.training_type ='regular or regular + distractor';
+key.training_type ='all';
 r = fetch1 (rel & key ,'avg_mode_mat_t_weights_corr');
 axes('position',[position_x(3), position_y(2), panel_width, panel_height]);
 fn_plot_CD_rotation(time,r);
@@ -97,14 +97,14 @@ fn_plot_CD_rotation(time,r);
 title(sprintf('\n %s %s \n',key.brain_area, key.hemisphere), 'FontSize',14);
 
 % Expert mice
-key.training_type ='regular + distractor';
+key.training_type ='distractor';
 r = fetch1 (rel & key ,'avg_mode_mat_t_weights_corr');
 axes('position',[position_x(2), position_y(3), panel_width, panel_height]);
 fn_plot_CD_rotation(time,r);
 title(sprintf('\n %s %s \n',  key.brain_area, key.hemisphere), 'FontSize',14);
 
 % Regular & Expert mice
-key.training_type ='regular or regular + distractor';
+key.training_type ='all';
 r = fetch1 (rel & key ,'avg_mode_mat_t_weights_corr');
 axes('position',[position_x(3), position_y(3), panel_width, panel_height]);
 fn_plot_CD_rotation(time,r);

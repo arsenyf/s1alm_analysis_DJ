@@ -1,4 +1,4 @@
-function fn_plotSimpleRaster(Param, Spikes, trials_in_session)
+function fn_plotSimpleRaster(Param, Spikes, Session)
 hold on;
 trials=Spikes.trial;
 trial_first = trials(1);
@@ -36,7 +36,7 @@ xlabel ('Time (s)','Fontsize', 8);
 set(gca,'Fontsize', 8);
 
 xlim([-4.5 2.5]);
-ylim([0 trials_in_session]);
+ylim([0 size(Session,1)]);
 
 
 

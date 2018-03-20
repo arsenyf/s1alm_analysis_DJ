@@ -37,7 +37,7 @@ position_y(5)=position_y(4)-vertical_distance;
 
 
 %% Expert mice
-btt = (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment)  & 'task_protocol!=3' & 'training_type="regular + distractor"' & 'session_comment="good behavior"';
+btt = (EXP.SessionID * ANL.SessionBehavPerformance * EXP.SessionTraining * EXP.SessionTask * EXP.SessionComment)  & 'task_protocol!=3' & 'training_type="distractor"' & 'session_comment="good behavior"';
 filename = ['behavior_population_expert'];
 
 % %% Regular mice

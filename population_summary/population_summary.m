@@ -1,8 +1,8 @@
 function population_summary()
 
 
-q1=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="Pyr"') * (EXP.SessionTraining & 'training_type="regular + distractor"');
-q2=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="FS"') * (EXP.SessionTraining & 'training_type="regular + distractor"');
+q1=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="Pyr"') * (EXP.SessionTraining & 'training_type="distractor"');
+q2=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="FS"') * (EXP.SessionTraining & 'training_type="distractor"');
 
 total_cells.labels{1}='ALM left';
 total_cells.Pyr(1) = numel(fetch(  q1 * (EPHYS.UnitPosition & 'brain_area="ALM"' & 'hemisphere="left"')  ));
