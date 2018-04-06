@@ -1,17 +1,11 @@
-function  [trialtype_uid] = fn_plot_PSTH (Unit, PSTH, Param, trial_instruction, outcome, trialtype_flag_standard, trialtype_flag_full_late)
+function   fn_plotClusterPhotostim (plot_counter, columns2plot, PSTH, Param, trial_instruction, peak_LR_hit_units,flag_xlabel,ylab,time2plot)
 
-PSTH = PSTH((strcmp(outcome, PSTH.outcome)),:);
 if ~isempty(trial_instruction)
     PSTH = PSTH((strcmp(trial_instruction, PSTH.trial_instruction)),:);
 end
-if ~isempty(trialtype_flag_standard)
-    PSTH = PSTH((trialtype_flag_standard== PSTH.trialtype_flag_standard),:);
-end
-if ~isempty(trialtype_flag_full_late)
-    PSTH = PSTH((trialtype_flag_full_late== PSTH.trialtype_flag_full_late),:);
-end
 
-trialtype_uid = unique(PSTH.trialtype_uid);
+
+
 if ~isempty(PSTH)
     hold on;
     len = 0.1;
@@ -32,9 +26,8 @@ if ~isempty(PSTH)
     psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
     smooth_time = Param.parameter_value{(strcmp('smooth_time_cell_psth',Param.parameter_name))};
     smooth_bins=ceil(smooth_time/psth_time_bin);
-    mintrials_psth_typeoutcome= Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
+    mintrials_heirarclusters= Param.parameter_value{(strcmp('mintrials_heirarclusters',Param.parameter_name))};
     
-    idx_few_trials = find(PSTH.num_trials_averaged <mintrials_psth_typeoutcome);
     
     
     fill(t_presample_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
@@ -48,19 +41,33 @@ if ~isempty(PSTH)
     plot([t_chirp1 t_chirp1], sz, 'k--','LineWidth',0.75);
     plot([t_chirp2 t_chirp2], sz, 'k--','LineWidth',0.75);
     
-    blank=zeros(size(PSTH.trial_type_name));
-    blank(idx_few_trials)=NaN;
-%     p(3).psth=smooth(PSTH.psth_avg(p(3).idx,:),smooth_bins) + blank(3);
-
-    for itype = 1:1:size(PSTH.trial_type_name,1)
-        psth_smooth = smooth(PSTH.psth_avg(itype,:),smooth_bins) + blank(itype);
-        plot(time,psth_smooth, 'Color', PSTH.trialtype_rgb(itype,:), 'LineWidth', 1.5);
+    
+    trialtype_uid = unique(PSTH.trialtype_uid,'stable');
+    trialtype_name = unique(PSTH.trial_type_name,'stable');
+    trialtype_plot_order = unique(PSTH.trialtype_plot_order,'stable');
+    for itype = sort(trialtype_plot_order,'descend')'
+        ix=trialtype_plot_order==itype;
+        PSTHtype=PSTH(PSTH.trialtype_uid==trialtype_uid(ix),:);
+        idx_include = find(PSTHtype.num_trials_averaged >=mintrials_heirarclusters);
+        psth_avg = PSTHtype.psth_avg(idx_include,:);
+        if ~isempty(psth_avg)
+            psth_smooth = movmean(psth_avg ,[smooth_bins 0], 2, 'Endpoints','shrink');
+            psth_smooth = psth_smooth./peak_LR_hit_units(idx_include);
+            psth = nanmean(psth_smooth,1);
+            plot(time,psth, 'Color', PSTHtype.trialtype_rgb(1,:), 'LineWidth', 1);
+        end
     end
     
-    ylabel (sprintf('FR (Hz)'),'Fontsize', 12);
-    xlabel ('Time (s)','Fontsize', 12);
-    xlim([-4.5 2.5]);
-    ylim([0 Unit.peak_fr]);
+    if mod(plot_counter,columns2plot)==0
+        ylabel(sprintf('%s\nFR norm. (Hz)',ylab));
+        if flag_xlabel==1
+            xlabel(sprintf('Time (s)\n'));
+        end
+    end
+    xlim([time2plot(1) time2plot(end)]);
+    ylim([0 1]);
+    set(gca,'xtick',[-4, -2, 0, 2],'ytick',[0 1],'tickdir','out','ticklength',[.04 .04],'fontsize',8)
+    
 else
     axis off;
 end

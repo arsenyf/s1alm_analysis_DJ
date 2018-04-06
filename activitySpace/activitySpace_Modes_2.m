@@ -33,7 +33,7 @@ for i_s = 1:numel (session_uid)
     a=fetch(Proj & 'trial_type_name="r"'  & 'mode_type_name="Stimulus"','*')
 % key=fetch(EXP.SessionID & 'session_uid = 38');
 
-    p=cell2mat({a(1:70).proj_average}');
+    p=cell2mat({a(1:46).proj_average}');
     pm=nanmean(p,1)
 plot(pm)
     Modes = fetch ((ANL.Mode * EXP.SessionID * EPHYS.Unit  * EPHYS.UnitCellType) & ANL.IncludeUnit & key_s & 'unit_quality!="multi"' & 'cell_type="Pyr"', '*');

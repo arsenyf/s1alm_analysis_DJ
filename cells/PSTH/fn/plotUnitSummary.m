@@ -1,4 +1,4 @@
-function plotCluster (Unit,PSTH, PSTHAdaptive, Param, Spikes, Session)
+function plotUnitSummary (Unit,PSTH, PSTHAdaptive, Param, Spikes, Session)
 
 panel_width=0.095;
 panel_height=0.1;
@@ -53,7 +53,7 @@ fn_plot_PSTH_basic_trials (Unit,PSTHAdaptive, Param, 'ignore');
 
 
 
-%% trialtype_flag_displayset1 (Left and Right with late-delay stimulation)
+%% trialtype_flag_full_late (Left and Right with late-delay stimulation)
 %correct
 axes('position',[position_x(1), position_y(2), panel_width, panel_height]);
 [trialtype_uid] = fn_plot_PSTH (Unit,PSTH, Param, [], 'hit', [], 1);

@@ -34,7 +34,7 @@ for imod = 1:1:numel(mode_names)
     %% Correct trials
     axes('position',[position_x(1), position_y(imod), panel_width, panel_height]);
     substract_trialtype_num=[];
-    fn_projectTrialsAvg(M, PSTH, Param);
+    fn_projectTrialAvg(M, PSTH);
     %     plotProjection(MODE(num).PROJ.proj_avg_pop, '-', substract_trialtype_num, GP.trial_order, GP);
     %     tmp = ylim;
     %     tmp(1) = min ([-1, tmp(1)]);

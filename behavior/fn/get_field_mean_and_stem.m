@@ -25,7 +25,7 @@ if sum(~isnan(s))
     elseif s_out.p<=0.01
         s_out.symbol='**';
     elseif s_out.p<=0.05
-        s_out.symbol='*  ';
+        s_out.symbol='*';
     else
         s_out.symbol='';
     end

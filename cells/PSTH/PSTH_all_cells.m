@@ -30,7 +30,6 @@ for i_s = 1:numel (session_uid)
     for i_u = 1:1:numel(unit_uid)
         PSTH=[]; PSTHAdaptive=[]; Spikes=[]; Unit =[];
         unit_uid(i_u)
-        if unit_uid(i_u)>=4935
             
             key_u.unit_uid = unit_uid(i_u);
             rel1 = (EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.UnitFiringRate * ANL.UnitISI) & key_s & key_u;
@@ -51,7 +50,7 @@ for i_s = 1:numel (session_uid)
             
             rel5 = (ANL.IncludeUnit * EPHYS.Unit) & key_u;
             
-            plotCluster (Unit,PSTH, PSTHAdaptive, Param, Spikes, Session);
+            plotUnitSummary (Unit,PSTH, PSTHAdaptive, Param, Spikes, Session);
             
             
             
@@ -96,7 +95,7 @@ for i_s = 1:numel (session_uid)
             eval(['print ', figure_name_out, ' -dtiff -cmyk -r200']);
             
             clf;
-        end
+        
     end
     
 end

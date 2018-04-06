@@ -1,8 +1,8 @@
 function population_summary()
 
 
-q1=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="Pyr"') * (EXP.SessionTraining & 'training_type="distractor"');
-q2=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="FS"') * (EXP.SessionTraining & 'training_type="distractor"');
+q1=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="Pyr"') * (EXP.SessionTraining);
+q2=(EPHYS.Unit & 'unit_quality!="multi"') * (EPHYS.UnitCellType & 'cell_type="FS"') * (EXP.SessionTraining);
 
 total_cells.labels{1}='ALM left';
 total_cells.Pyr(1) = numel(fetch(  q1 * (EPHYS.UnitPosition & 'brain_area="ALM"' & 'hemisphere="left"')  ));
@@ -25,4 +25,6 @@ histogram(mean_fr,[0:0.1:5])
 mean_fr_sample_delay = fetchn(ANL.UnitFiringRate * (EPHYS.UnitCellType & 'cell_type="FS"'),'mean_fr_sample_delay');
 histogram(mean_fr_sample_delay,[0:0.1:100])
 
-peak_fr_basic_trials = fetchn(ANL.UnitFiringRate * EPHYS.Unit,'waveform','ORDER BY unit_uid');
+waveform = fetch(EPHYS.UnitWaveform * EPHYS.Unit * EXP.Session * EXP.SessionID,'*');
+
+
