@@ -69,7 +69,7 @@ text(-8,0,'Ignore trials','FontSize',14,'Rotation',90,'FontWeight','bold','Horiz
 
 % Plot trial-type legends
 axes('position',[position_x(1), position_y(2)+0.11, panel_width, panel_height*0.7]);
-fn_plot_trial_legend (trialtype_uid, PSTH);
+fn_plot_trial_legend (trialtype_uid);
 title ('Late delay photostim','Fontsize', 12);
   
 
@@ -86,7 +86,7 @@ fn_plot_PSTH (Unit,PSTH, Param, 'right', 'ignore', 1, []);
 
 % Plot trial-type legends
 axes('position',[position_x(2), position_y(2)+0.11, panel_width, panel_height*0.7]);
-fn_plot_trial_legend (trialtype_uid, PSTH);
+fn_plot_trial_legend (trialtype_uid);
 title ('Lick Right','Fontsize', 12);
 
   
@@ -104,7 +104,7 @@ fn_plot_PSTH (Unit,PSTH, Param, 'left', 'ignore', 1, []);
 
 % Plot trial-type legends
 axes('position',[position_x(3), position_y(2)+0.11, panel_width, panel_height*0.7]);
-fn_plot_trial_legend (trialtype_uid, PSTH);
+fn_plot_trial_legend (trialtype_uid);
 title ('Lick Left','Fontsize', 12);
 
 
@@ -121,7 +121,7 @@ fn_plot_PSTH (Unit,PSTH, Param, [], 'ignore', 0, []);
 
 % Plot trial-type legends
 axes('position',[position_x(4), position_y(2)+0.11, panel_width, panel_height*0.7]);
-fn_plot_trial_legend (trialtype_uid, PSTH);
+fn_plot_trial_legend (trialtype_uid);
 title ('Special trials','Fontsize', 12);
 
 
@@ -138,7 +138,7 @@ fn_plot_PSTH (Unit,PSTHAdaptive, Param, 'right', 'ignore', [], []);
 
 % Plot trial-type legends
 axes('position',[position_x(5), position_y(2)+0.11, panel_width, panel_height*0.7]);
-fn_plot_trial_legend (trialtype_uid, PSTHAdaptive);
+fn_plot_trial_legend (trialtype_uid);
 title (sprintf('Adaptive averaging\nLick right'),'Fontsize', 12);
 
 %% Adaptive PSTH - All Left trials
@@ -154,7 +154,7 @@ fn_plot_PSTH (Unit,PSTHAdaptive, Param, 'left', 'ignore', [], []);
 
 % Plot trial-type legends
 axes('position',[position_x(6), position_y(2)+0.11, panel_width, panel_height*0.7]);
-fn_plot_trial_legend (trialtype_uid, PSTHAdaptive);
+fn_plot_trial_legend (trialtype_uid);
 title (sprintf('Adaptive averaging\nLick left'),'Fontsize', 12);
 
 

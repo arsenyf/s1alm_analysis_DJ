@@ -120,7 +120,7 @@ for ii = cluster_order
     % Plot trial-type legends
     axes('position',[position_x(1)+horizontal_distance*(mod(plot_counter,columns2plot)), position_y(floor(plot_counter/columns2plot)+1)+0.07, panel_width, panel_height]);
     trialtype_uid = unique(PSTH_hit.trialtype_uid);
-    fn_plot_trial_legend (trialtype_uid, PSTH_hit);
+    fn_plot_trial_legend (trialtype_uid);
     xlim([time2plot(1), time2plot(end)]);
     
     %% Cluster Pure L vs Pure R PSTH

@@ -1,14 +1,16 @@
-function fn_plot_trial_legend (trialtype_uid, PSTH)
+function fn_plot_trial_legend (trialtype_uid)
 hold on;
+
+TRIAL = struct2table(fetch(ANL.TrialTypeID * ANL.TrialTypeStimTime * ANL.TrialTypeGraphic,'*','ORDER BY trialtype_uid'));
 
 sz = 10;
 counter=1;
 for ii = 1:1:numel(trialtype_uid)
-    t_id = find(trialtype_uid(ii) ==  PSTH.trialtype_uid,1);
-    stim_onset = PSTH.stim_onset{t_id};
-    stim_duration = PSTH.stim_duration{t_id};
+    t_idx =trialtype_uid(ii);
+    stim_onset = TRIAL.stim_onset{t_idx};
+    stim_duration = TRIAL.stim_duration{t_idx};
     for jj = 1:1:numel(stim_onset)
-    plot([stim_onset(jj), stim_onset(jj) + stim_duration(jj)], counter*sz+[0 0], 'Color', PSTH.trialtype_rgb(t_id,:), 'LineWidth', 3);
+    plot([stim_onset(jj), stim_onset(jj) + stim_duration(jj)], counter*sz+[0 0], 'Color', TRIAL.trialtype_rgb(t_idx,:), 'LineWidth', 3);
     end
     counter = counter + 1;
 end
