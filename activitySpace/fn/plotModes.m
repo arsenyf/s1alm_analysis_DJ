@@ -1,9 +1,9 @@
 function [OUT, GP] = plotModes (rel,Param)
 
 
-panel_width=0.1;
+panel_width=0.08;
 panel_height=0.09;
-horizontal_distance=0.14;
+horizontal_distance=0.12;
 vertical_distance=0.15;
 
 position_x(1)=0.05;
@@ -27,8 +27,10 @@ mode_names = unique(fetchn(rel,'mode_type_name'))';
 % mode_names = mode_names(~contains(mode_names, 'orthogonal'))
 % mode_names = mode_names(contains(mode_names, 'orthogonal'))
 
-mode_names = {'Stimulus','EarlyDelay','LateDelay','Ramping','Stimulus orthogonal to LateDelay', 'EarlyDelay orthogonal to LateDelay', 'LateDelay orthogonal to EarlyDelay'};
-mode_names_titles = {'Stimulus','EarlyDelay','LateDelay','Ramping','Stimulus orthogonal LD', 'EarlyDelay orthogonal LD', 'LateDelay orthogonal ED'};
+mode_names = {'Stimulus','EarlyDelay','LateDelay','Stimulus Orthog.','EarlyDelay Orthog.','LateDelay Orthog.','Ramping Orthog.','Movement Orthog.'};
+mode_names_titles = mode_names; 
+
+% mode_names_titles = {'Stimulus','EarlyDelay','LateDelay','Stimulus orthogonal to EarlyDelay','Stimulus ort. LD', 'EarlyDelay ort. LD', 'LD ort. Movement', 'LD ort. ED'};
 trialtype_uid = unique(fetchn(rel,'trialtype_uid'));
 
 for imod = 1:1:numel(mode_names)

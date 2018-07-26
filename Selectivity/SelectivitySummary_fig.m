@@ -5,10 +5,10 @@ dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\'
 dir_save_figure = [dir_root '\Results\Selectivity\'];
 
 key.brain_area = 'ALM'
-key.hemisphere = 'right'
-key.training_type = 'distractor'
+key.hemisphere = 'left'
+key.training_type = 'regular'
 key.unit_quality = 'ok or good'  %'ok or good'
-key.cell_type = 'FS'
+key.cell_type = 'Pyr'
 
 %Graphics
 %---------------------------------
@@ -64,8 +64,8 @@ rel=(EPHYS.Unit * EXP.SessionTraining * EPHYS.UnitPosition * EPHYS.UnitCellType 
 %fetch Unit
 %% Hit
 % fetch and smooth PSTH
-PSTH_L_hit = movmean(cell2mat(fetchn((rel & k) & 'outcome="hit"' & 'trial_type_name="l"', 'psth_avg', 'ORDER BY unit_uid')),[smooth_bins 0], 2, 'Endpoints','shrink');
-PSTH_R_hit =   movmean(cell2mat(fetchn((rel & k) & 'outcome="hit"' & 'trial_type_name="r"', 'psth_avg', 'ORDER BY unit_uid')),[smooth_bins 0], 2, 'Endpoints','shrink');
+PSTH_L_hit = movmean(cell2mat(fetchn((rel & k) & 'outcome="hit"' & 'trial_type_name="l"', 'psth_avg', 'ORDER BY unit_uid')),[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+PSTH_R_hit =   movmean(cell2mat(fetchn((rel & k) & 'outcome="hit"' & 'trial_type_name="r"', 'psth_avg', 'ORDER BY unit_uid')),[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
 
 axes('position',[position_x(1), 0.89, panel_width, panel_height]);
 text( 0,0 , sprintf('%s %s side   Training: %s    CellQuality: %s  Cell-type: %s    \n ' ,...

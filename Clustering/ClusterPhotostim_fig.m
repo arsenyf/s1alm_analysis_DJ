@@ -73,8 +73,8 @@ R.labels = {'hit','miss','ignore'};
 %% Hit
 % fetch and smooth PSTH
 rel1= ((ANL.PSTHAverage * EPHYS.Unit) & key_cluster) & 'outcome="hit"';
-L.PSTH{1} = movmean(cell2mat(fetchn(rel1  & 'trial_type_name="l"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'Endpoints','shrink');
-R.PSTH{1} = movmean(cell2mat(fetchn(rel1  & 'trial_type_name="r"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'Endpoints','shrink');
+L.PSTH{1} = movmean(cell2mat(fetchn(rel1  & 'trial_type_name="l"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+R.PSTH{1} = movmean(cell2mat(fetchn(rel1  & 'trial_type_name="r"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
 
 L.num_trials{1} = (fetchn(rel1  & 'trial_type_name="l"', 'num_trials_averaged', 'ORDER BY unit_uid'));
 R.num_trials{1} = (fetchn(rel1  & 'trial_type_name="r"', 'num_trials_averaged', 'ORDER BY unit_uid'));

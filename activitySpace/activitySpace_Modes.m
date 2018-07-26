@@ -7,12 +7,13 @@ dir_save_figure = [dir_root 'Results\Population\activitySpace\Modes\projections\
 flag_single_sessions =0; % 1 to analyze single sessions, 0 to average across sessions
 
 key.brain_area = 'ALM'
-key.hemisphere = 'right'
+key.hemisphere = 'left'
 key.training_type = 'distractor'
 key.unit_quality = 'ok or good'
 key.cell_type = 'Pyr'
 key.mode_weights_sign = 'all';
-condition = 'full_late'
+condition = 'full'
+
 
 
 if strcmp(condition,'mini')
@@ -45,7 +46,7 @@ Param = struct2table(fetch (ANL.Parameters,'*'));
 smooth_time = Param.parameter_value{(strcmp('smooth_time_proj',Param.parameter_name))};
 dir_save_figure = [dir_save_figure 'smooth' num2str(smooth_time) 's\']
 
-rel =((EXP.Session * EXP.SessionID * ANL.ProjTrialAverage * EXP.SessionTraining  * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction *  ANL.IncludeSession * ANL.SessionGrouping * ANL.TrialTypeStimTime ) - ANL.ExcludeSession) & k & 'unit_quality!="multi"' ;
+rel =((EXP.Session * EXP.SessionID * ANL.ProjTrialAdaptiveAverage * EXP.SessionTraining  * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction *  ANL.IncludeSession * ANL.SessionGrouping * ANL.TrialTypeStimTime ) - ANL.ExcludeSession) & k & 'unit_quality!="multi"' ;
 
 session_uid = unique(fetchn(rel, 'session_uid'));
 

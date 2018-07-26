@@ -14,11 +14,6 @@ end
 trialtype_uid = unique(PSTH.trialtype_uid);
 if ~isempty(PSTH)
     hold on;
-    len = 0.1;
-    sz = [0 200];
-    
-    xdat = [0 0 len len];
-    ydat = [sz(1) sz(2) sz(2) sz(1)];
     
     
     t_go = Param.parameter_value{(strcmp('t_go',Param.parameter_name))};
@@ -37,24 +32,34 @@ if ~isempty(PSTH)
     idx_few_trials = find(PSTH.num_trials_averaged <mintrials_psth_typeoutcome);
     
     
-    fill(t_presample_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
-    fill(t_sample_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
-    fill(t_earlydelay_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
-    fill(t_latedelay_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
+    %     fill(t_presample_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
+    %     fill(t_sample_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
+    %     fill(t_earlydelay_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
+    %     fill(t_latedelay_stim+xdat, ydat, [0 0 0], 'FaceAlpha', 0.12, 'LineStyle', 'None');
     
     
+    sz = [0 200];
+    ydat = [sz(1) sz(2) sz(2) sz(1)];
+    for itype = 1:1:size(PSTH.trial_type_name,1)
+        stim_onset=PSTH.stim_onset{itype,:};
+        stim_duration=PSTH.stim_duration{itype,:};
+        for istim=1:1:numel(stim_onset)
+            xdat = [0 0 stim_duration(istim) stim_duration(istim)];
+            fill([stim_onset(istim) + xdat], ydat, [0.75 0.75 0.75], 'LineStyle', 'None');
+        end
+    end
     
-    plot([t_go t_go], sz, 'k-','LineWidth',2);
+    
+    plot([t_go t_go], sz, 'k-','LineWidth',1.5);
     plot([t_chirp1 t_chirp1], sz, 'k--','LineWidth',0.75);
     plot([t_chirp2 t_chirp2], sz, 'k--','LineWidth',0.75);
     
+    
     blank=zeros(size(PSTH.trial_type_name));
     blank(idx_few_trials)=NaN;
-%     p(3).psth=smooth(PSTH.psth_avg(p(3).idx,:),smooth_bins) + blank(3);
-
     for itype = 1:1:size(PSTH.trial_type_name,1)
-        psth_smooth = smooth(PSTH.psth_avg(itype,:),smooth_bins) + blank(itype);
-        plot(time,psth_smooth, 'Color', PSTH.trialtype_rgb(itype,:), 'LineWidth', 1.5);
+        psth_smooth=  movmean(PSTH.psth_avg(itype,:),[smooth_bins 0], 2, 'omitnan','Endpoints','shrink') + blank(itype);
+        plot(time,psth_smooth, 'Color', PSTH.trialtype_rgb(itype,:), 'LineWidth', 1);
     end
     
     ylabel (sprintf('FR (Hz)'),'Fontsize', 12);

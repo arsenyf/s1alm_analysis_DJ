@@ -2,24 +2,27 @@ function activitySpace_ModesVariance()
 close all;
 
 dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\'
-dir_save_figure = [dir_root 'Results\Population\activitySpace\Modes\projections\'];
+dir_save_figure = [dir_root 'Results\Population\activitySpace\Modes\Variance\'];
 
 
 key.brain_area = 'ALM'
-key.hemisphere = 'right'
-key.training_type = 'distractor'
+key.hemisphere = 'left'
+key.training_type = 'regular'
 key.unit_quality = 'ok or good'
 key.cell_type = 'Pyr'
-key.mode_weights_sign = 'all';
+k=key;
+k.outcome='hit';
 
-
-
-k = key;
-
-if contains(key.hemisphere, 'both')
-    k = rmfield(k, 'hemisphere');
+k_proj.mode_weights_sign='all';
+k.session_uid=32;
+if contains(k.unit_quality, 'ok or good')
+    k = rmfield(k,'unit_quality')
+    rel_PSTH = (( ANL.PSTHAverage * EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining  ) ) & ANL.IncludeUnit & k & 'unit_quality!="multi"' ;
+    rel_Proj = (( ANL.ProjTrialAverage * EXP.Session * EXP.SessionID  * EXP.SessionTraining  )) & k & k_proj & 'unit_quality="ok or good"' ;
+else
+    rel_PSTH = (( ANL.PSTHAverage * EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining  )) & ANL.IncludeUnit & k ;
+    rel_Proj = (( ANL.ProjTrialAverage * EXP.Session * EXP.SessionID   * EXP.SessionTraining ) ) & k & k_proj;
 end
-k_psth = key;
 
 
 %Graphics
@@ -29,111 +32,144 @@ set(gcf,'DefaultAxesFontName','helvetica');
 set(gcf,'PaperUnits','centimeters','PaperPosition',[0 0 35 30]);
 set(gcf,'PaperOrientation','portrait');
 set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 0 0 0]);
+panel_width=0.1;
+panel_height=0.09;
+horizontal_distance=0.14;
+vertical_distance=0.15;
 
+position_x(1)=0.05;
+position_x(2)=position_x(1)+horizontal_distance;
+position_x(3)=position_x(2)+horizontal_distance;
+position_x(4)=position_x(3)+horizontal_distance;
+position_x(5)=position_x(4)+horizontal_distance;
+position_x(6)=position_x(5)+horizontal_distance;
+position_x(7)=position_x(6)+horizontal_distance;
+position_x(8)=position_x(7)+horizontal_distance;
 
+position_y(1)=0.7;
+position_y(2)=position_y(1)-vertical_distance;
+position_y(3)=position_y(2)-vertical_distance;
+position_y(4)=position_y(3)-vertical_distance;
+position_y(5)=position_y(4)-vertical_distance;
+
+% Params
 Param = struct2table(fetch (ANL.Parameters,'*'));
+t_go = Param.parameter_value{(strcmp('t_go',Param.parameter_name))};
+t_chirp1 = Param.parameter_value{(strcmp('t_chirp1',Param.parameter_name))};
+t_chirp2 = Param.parameter_value{(strcmp('t_chirp2',Param.parameter_name))};
+
 time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
 psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
 smooth_time = Param.parameter_value{(strcmp('smooth_time_cell_psth_for_clustering',Param.parameter_name))};
 smooth_bins=ceil(smooth_time/psth_time_bin);
-idx_time2plot = (time>= -3.5 & time<=0);
-time2plot = time(idx_time2plot);
+baseline_idx_time = (time>= -4 & time<=-3);
 
-dir_save_figure = [dir_save_figure 'smooth' num2str(smooth_time) 's\']
+time_window = 0.1;
+time_start = -2.5;
+time_end =2;
 
-rel_proj =((EXP.Session * EXP.SessionID * ANL.ProjTrialAverageLR * EXP.SessionTraining  * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction *  ANL.IncludeSession * ANL.SessionGrouping * ANL.TrialTypeStimTime ) ) & k & 'unit_quality!="multi"' ;
-
-if contains(k_psth.unit_quality, 'ok or good')
-    k_psth = rmfield(k_psth,'unit_quality')
-    rel_PTSH =((EXP.Session * EXP.SessionID * ANL.PSTHAverageLR * EPHYS.Unit *  EPHYS.UnitCellType * EXP.SessionTraining  * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction *  ANL.IncludeSession * ANL.SessionGrouping * ANL.TrialTypeStimTime ) ) & k_psth & 'unit_quality!="multi"' ;
-    rel_Selectivity =((EXP.Session * EXP.SessionID * ANL.Selectivity * EPHYS.Unit * EPHYS.UnitPosition *   EPHYS.UnitCellType * EXP.SessionTraining    *  ANL.IncludeSession * ANL.SessionGrouping  ) ) & k_psth & 'unit_quality!="multi"' ;
-
-else    
-    rel_PTSH =((EXP.Session * EXP.SessionID * ANL.PSTHAverageLR * EPHYS.Unit *  EPHYS.UnitCellType * EXP.SessionTraining  * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction *  ANL.IncludeSession * ANL.SessionGrouping * ANL.TrialTypeStimTime ) ) & k_psth ;
-    rel_Selectivity =((EXP.Session * EXP.SessionID * ANL.Selectivity * EPHYS.Unit * EPHYS.UnitPosition *  EPHYS.UnitCellType * EXP.SessionTraining    *  ANL.IncludeSession * ANL.SessionGrouping  ) ) & k_psth ;
-
-end
-
-
-unit_selectivity = movmean(cell2mat(fetchn(rel_Selectivity,'unit_selectivity')) ,[smooth_bins 0], 2, 'Endpoints','shrink');
-unit_selectivity = unit_selectivity(:,idx_time2plot);
-
-[coeff,score,~, ~, explained] = pca(unit_selectivity);
-num_of_PCs=5;
-   figure('position',[0 720 1000 200])
-for c = 1:num_of_PCs
-    subplot(1,num_of_PCs,c)
-    plot(time2plot, coeff(:,c))
-    xlabel('Time');
-    ylabel(['PC ' num2str(c)]);
-    xlim([time2plot(1),time2plot(end)]);
-    title (sprintf('Variance \nexplained %.1f %%',explained(c)));
-end
-
-
-
-
-
-
-session_uid = unique(fetchn(rel_proj, 'session_uid'));
-
+%% loop over sessions
+session_uid = unique(fetchn(rel_Proj,'session_uid'));
 
 for i_s = 1:1:numel(session_uid)
-    key_session.session_uid = session_uid(i_s);
-    
-    
-    PSTH_l = fetch(rel_PTSH & key_session  & 'outcome="hit"' & 'trial_type_name="l"','*');
-    PSTH_r = fetch(rel_PTSH & key_session  & 'outcome="hit"' & 'trial_type_name="l"','*');
+    k_s.session_uid=session_uid(i_s);
 
-    for i_cell=1:1:size(PSTH_l,1)
-%         PSTH_concat(i_cell,:) = [PSTH_l(i_cell).psth_avg,PSTH_r(i_cell).psth_avg]
-        PSTH_concat(i_cell,isnan(PSTH_concat(i_cell,:))) =0;
-        PSTH_concat(i_cell,:) = [PSTH_l(i_cell).psth_avg,PSTH_r(i_cell).psth_avg]
+    %fetch selectivity
 
-    end
+    psth_left = movmean(cell2mat(fetchn(rel_PSTH & k_s & 'trial_type_name="l"','psth_avg')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+    psth_right = movmean(cell2mat(fetchn(rel_PSTH & k_s & 'trial_type_name="r"','psth_avg')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
     
-     PSTH_concat(isnan(PSTH_concat)) =0;
-    
-    
+    unit_selectivity = abs(psth_right - psth_left);
+
+    psth_left = psth_left - nanmean(psth_left (:,baseline_idx_time),2);
+    psth_right = psth_right - nanmean(psth_right (:,baseline_idx_time),2);
 
     
-%     mode_names = {'Stimulus','EarlyDelay','LateDelay','Ramping','Stimulus orthogonal to LateDelay', 'EarlyDelay orthogonal to LateDelay', 'LateDelay orthogonal to EarlyDelay'};
-% 
-%     
-%     for imod = 1:1:numel(mode_names)
-%              key_mode.mode_type_name = mode_names{imod};
-%             PROJ = fetch(rel_proj & key_session & key_mode & 'outcome="hit"','*');
-% 
-%     end
-    
-    axes('position',[0.05, 0.92, 0.2, 0.1]);
-    text( 0,0 , sprintf('%s %s side   Training: %s    CellQuality: %s  Cell-type: %s     Animal %d    %s    session id %d' ,...
-        key.brain_area, key.hemisphere, key.training_type, key.unit_quality, key.cell_type, subject_id,session_date,  key_session.session_uid),'HorizontalAlignment','Left','FontSize', 10);
-    axis off;
-    box off;
-    
-    
-    
-    if contains(key.unit_quality, 'ok or good')
-        key.unit_quality = 'ok';
+    %fetch proj
+    mode_names = {'LateDelay', 'Stimulus','EarlyDelay Orthog.','Ramping Orthog.'};
+%     mode_names = {'LateDelay', 'Stimulus','EarlyDelay ','Ramping Orthog.'};
+
+    for i_m = 1:1:numel(mode_names)
+        k_proj.mode_type_name = mode_names{i_m};
+        proj_l(i_m,:) = movmean((fetch1(rel_Proj & k_s & k_proj & 'trial_type_name="l"','proj_average')),[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+        proj_r(i_m,:) =  movmean((fetch1(rel_Proj & k_s & k_proj & 'trial_type_name="r"','proj_average')),[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+        proj_select(i_m,:) = proj_r(i_m,:) - proj_l(i_m,:);
+        
+%         proj_l(i_m,:) = proj_l(i_m,:) - nanmean(proj_l (i_m,baseline_idx_time));
+%         proj_r(i_m,:) = proj_r(i_m,:) - nanmean(proj_r (i_m,baseline_idx_time));
+
     end
     
-    filename =[sprintf('%s%s_Training_%s_UnitQuality_%s_Type_%s_suid%d' ,key.brain_area, key.hemisphere, key.training_type, key.unit_quality, key.cell_type, key_session.session_uid )];
-    
-    if isempty(dir(dir_save_figure_full))
-        mkdir (dir_save_figure_full)
+    cnt=1;
+    for i_t=time_start:time_window:time_end
+        idx_time = (time>= i_t & time<=(i_t+time_window));
+        
+        % selectivity explained
+        total_selectivity(i_s,cnt) = sum(nanmean(unit_selectivity(:,idx_time),2).^2);
+        total_proj_select(i_s,:,cnt) = nanmean(proj_select(:,idx_time),2).^2;
+        s_explained(i_s,:,cnt) = total_proj_select(i_s,:,cnt)./total_selectivity(i_s,cnt)'; %selectivity explained
+        
+        % Trial-averaged variance explained
+        total_var(i_s,cnt) = sum(nanmean(psth_left(:,idx_time),2).^2)+sum(nanmean(psth_right(:,idx_time),2).^2);
+        total_proj_var(i_s,:,cnt) = nanmean(proj_l(:,idx_time),2).^2 + nanmean(proj_r(:,idx_time),2).^2;
+        trialavg_v_explained(i_s,:,cnt) = total_proj_var(i_s,:,cnt)./total_var(i_s,cnt)'; %selectivity explained
+        
+        
+        cnt=cnt+1;
     end
-    figure_name_out=[ dir_save_figure_full filename];
-    eval(['print ', figure_name_out, ' -dtiff -cmyk -r300']);
-    eval(['print ', figure_name_out, ' -painters -dpdf -cmyk -r200']);
-    
-    
-    if flag_single_sessions==0 % average across sessions
-        break
-    end
-    clf
 end
+
+time2plot = time_start:time_window:time_end;
+
+
+axes('position',[position_x(1), position_y(1), panel_width, panel_height]);
+selectivity_explained.m = squeeze(mean(s_explained,1));
+selectivity_explained.stem = squeeze(std(s_explained,1,1))./sqrt(numel(session_uid));
+hold on
+shadedErrorBar(time2plot,selectivity_explained.m(1,:),selectivity_explained.stem(1,:),'lineprops',{'b-','markerfacecolor','b','linewidth',1});
+shadedErrorBar(time2plot,selectivity_explained.m(2,:),selectivity_explained.stem(2,:),'lineprops',{'r-','markerfacecolor','r','linewidth',1});
+shadedErrorBar(time2plot,selectivity_explained.m(3,:),selectivity_explained.stem(3,:),'lineprops',{'g-','markerfacecolor','g','linewidth',1});
+shadedErrorBar(time2plot,selectivity_explained.m(4,:),selectivity_explained.stem(4,:),'lineprops',{'m-','markerfacecolor','m','linewidth',1});
+plot(time2plot,sum(selectivity_explained.m(:,:)),'-k','linewidth',1);
+
+xlabel('Time(s)');
+ylabel('Selectivity explained');
+xlim([time_start time_end]);
+ylim([0 1]);
+
+axes('position',[position_x(2), position_y(1), panel_width, panel_height]);
+trialavg_var_explained.m = squeeze(nanmean(trialavg_v_explained,1));
+trialavg_var_explained.stem = squeeze(nanstd(trialavg_v_explained,1,1))./sqrt(numel(session_uid));
+hold on
+shadedErrorBar(time2plot,trialavg_var_explained.m(1,:),trialavg_var_explained.stem(1,:),'lineprops',{'b-','markerfacecolor','b','linewidth',1});
+shadedErrorBar(time2plot,trialavg_var_explained.m(2,:),trialavg_var_explained.stem(2,:),'lineprops',{'r-','markerfacecolor','r','linewidth',1});
+shadedErrorBar(time2plot,trialavg_var_explained.m(3,:),trialavg_var_explained.stem(3,:),'lineprops',{'g-','markerfacecolor','g','linewidth',1});
+shadedErrorBar(time2plot,trialavg_var_explained.m(4,:),trialavg_var_explained.stem(4,:),'lineprops',{'m-','markerfacecolor','m','linewidth',1});
+plot(time2plot,sum(trialavg_var_explained.m(:,:)),'-k','linewidth',1);
+
+xlabel('Time(s)');
+ylabel('Variance explained');
+xlim([time_start time_end]);
+ylim([0 1]);
+
+
+if contains(key.unit_quality, 'ok or good')
+    key.unit_quality = 'ok';
 end
+
+filename =[sprintf('%s%s_Training_%s_UnitQuality_%s_Type_%s_Variance' ,key.brain_area, key.hemisphere, key.training_type, key.unit_quality, key.cell_type)];
+
+if isempty(dir(dir_save_figure))
+    mkdir (dir_save_figure)
+end
+figure_name_out=[ dir_save_figure filename];
+eval(['print ', figure_name_out, ' -dtiff -cmyk -r300']);
+eval(['print ', figure_name_out, ' -painters -dpdf -cmyk -r200']);
+
+% 
+
+end
+
 
 
 

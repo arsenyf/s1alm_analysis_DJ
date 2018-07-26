@@ -31,6 +31,9 @@ for itr=ignore
     plot(spike_times_go{ix,:}', itr,'.','Color',[0 0 0],'MarkerSize',0.5)
 end
 
+plot([-5,5], [Spikes.trial(1),Spikes.trial(1)],'-k');
+plot([-5,5], [Spikes.trial(end),Spikes.trial(end)],'-k');
+
 ylabel ('# Trial','Fontsize', 8);
 xlabel ('Time (s)','Fontsize', 8);
 set(gca,'Fontsize', 8);

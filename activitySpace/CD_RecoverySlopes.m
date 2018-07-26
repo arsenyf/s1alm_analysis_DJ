@@ -61,7 +61,7 @@ for itype= 1:1:numel(trial_types)
         
         %     Proj_avg=nanmean(P.proj_average(idx_include,:),1);
         %     Proj_smooth = movmean(Proj_avg ,[smooth_bins 0], 2, 'Endpoints','shrink');
-        Proj_smooth = movmean(P.proj_average(i_session,:) ,[smooth_bins 0], 2, 'Endpoints','shrink');
+        Proj_smooth = movmean(P.proj_average(i_session,:) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
         key_name.trial_type_name = trial_types{itype};
         stim_onset = fetch1 (ANL.TrialTypeStimTime & key_name,'stim_onset');
         
@@ -139,7 +139,7 @@ for itype= 1:1:numel(trial_types)
         
         %     Proj_avg=nanmean(P.proj_average(idx_include,:),1);
         %     Proj_smooth = movmean(Proj_avg ,[smooth_bins 0], 2, 'Endpoints','shrink');
-        Proj_smooth = movmean(P.proj_average(i_session,:) ,[smooth_bins 0], 2, 'Endpoints','shrink');
+        Proj_smooth = movmean(P.proj_average(i_session,:) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
         key_name.trial_type_name = trial_types{itype};
         stim_onset = fetch1 (ANL.TrialTypeStimTime & key_name,'stim_onset');
         

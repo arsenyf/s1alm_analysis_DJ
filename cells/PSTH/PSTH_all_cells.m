@@ -28,11 +28,14 @@ for i_s = 1:numel (session_uid)
     end
     
     for i_u = 1:1:numel(unit_uid)
+%         if unit_uid(i_u)<3708
+%             continue
+%         end
         PSTH=[]; PSTHAdaptive=[]; Spikes=[]; Unit =[];
         unit_uid(i_u)
             
             key_u.unit_uid = unit_uid(i_u);
-            rel1 = (EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.UnitFiringRate * ANL.UnitISI) & key_s & key_u;
+            rel1 = (EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitCellType * EPHYS.UnitPosition * ANL.UnitFiringRate * ANL.UnitISI * EPHYS.UnitWaveform) & key_s & key_u;
             Unit = fetch(rel1,'*');
             
             rel2 = (EXP.SessionID * EPHYS.Unit * ANL.PSTHAverage * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction * ANL.TrialTypeStimTime) & key_s & key_u;
@@ -41,7 +44,11 @@ for i_s = 1:numel (session_uid)
             rel3 = (EXP.SessionID * EPHYS.Unit * ANL.PSTHAdaptiveAverage * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction  * ANL.TrialTypeStimTime) & key_s & key_u;
             PSTHAdaptive = struct2table(fetch(rel3,'*', 'ORDER BY trialtype_plot_order DESC'));
             
+            rel4 = (EXP.SessionID * EPHYS.Unit * ANL.PSTHAverageLR * ANL.TrialTypeID * ANL.TrialTypeGraphic * ANL.TrialTypeInstruction  * ANL.TrialTypeStimTime) & key_s & key_u;
+            PSTHAverageLR = struct2table(fetch(rel4,'*', 'ORDER BY trialtype_plot_order DESC'));
+
             rel4 = (ANL.TrialSpikesGoAligned * EXP.SessionID * EXP.BehaviorTrial) & key_s  &  (EPHYS.Unit & key_u);
+            
             if rel4.count<=1
                 continue
             end
@@ -50,7 +57,7 @@ for i_s = 1:numel (session_uid)
             
             rel5 = (ANL.IncludeUnit * EPHYS.Unit) & key_u;
             
-            plotUnitSummary (Unit,PSTH, PSTHAdaptive, Param, Spikes, Session);
+            plotUnitSummary (Unit,PSTH, PSTHAdaptive,PSTHAverageLR, Param, Spikes, Session);
             
             
             

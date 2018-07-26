@@ -1,4 +1,4 @@
-function plotUnitSummary (Unit,PSTH, PSTHAdaptive, Param, Spikes, Session)
+function plotUnitSummary (Unit,PSTH, PSTHAdaptive,PSTHAverageLR, Param, Spikes, Session)
 
 panel_width=0.095;
 panel_height=0.1;
@@ -19,37 +19,39 @@ position_y(3)=position_y(2)-vertical_distance*0.7;
 position_y(4)=position_y(3)-vertical_distance*0.7;
 % position_y(5)=position_y(4)-vertical_distance*1.3;
 
-axes('position',[position_x(1), position_y(1)+0.05, panel_width, panel_height]);
-title(sprintf('%s  %s  anm%d    %s    training: %s   Unit #%d      Quality: %s    Cell-type: %s \nShank: %d      site: %d     depth: %d um    mean FR %.2f (Hz)    peak FR %.2f (Hz)',Unit.brain_area, Unit.hemisphere, Unit.subject_id, Unit.session_date, Session(1).training_type, Unit.unit_uid, Unit.unit_quality, Unit.cell_type, Unit.electrode_group, Unit.unit_channel, Unit.unit_dv_location, Unit.mean_fr, Unit.peak_fr_basic_trials),'FontSize',12,'HorizontalAlignment','left');   
+axes('position',[position_x(1)-0.05, position_y(1)+0.05, panel_width, panel_height]);
+num_not_ignore_trials=sum(~contains(Spikes.outcome,'ignore'));
+title(sprintf('%s  %s  anm%d    %s    training: %s   Unit uid #%d      Quality: %s    Cell-type: %s   %d response(not ignore) trials \nShank: %d      site: %d     depth: %d um  mFR Samp %.2f (Hz)  mFR Del %.2f (Hz)  mFR Resp %.2f (Hz) pFR adaptive basic trials %.2f (Hz)  ',Unit.brain_area, Unit.hemisphere, Unit.subject_id, Unit.session_date, Session(1).training_type, Unit.unit_uid, Unit.unit_quality, Unit.cell_type, num_not_ignore_trials, Unit.electrode_group, Unit.unit_channel, Unit.unit_dv_location, Unit.mean_fr_sample, Unit.mean_fr_delay, Unit.mean_fr_response, Unit.adaptive_peak_fr_basic_trials),'FontSize',12,'HorizontalAlignment','left');   
 
 axis off;
 
-%% Basic trials - Left and Right
-% Correct
-axes('position',[position_x(1), position_y(1), panel_width, panel_height]);
-fn_plot_PSTH_basic_trials (Unit,PSTH, Param, []);
-
-% Correct vs Error
-axes('position',[position_x(2), position_y(1), panel_width, panel_height]);
-fn_plot_PSTH_basic_trials (Unit,PSTH, Param, 'miss');
-
-%'Correct vs No-lick'
-axes('position',[position_x(3), position_y(1), panel_width, panel_height]);
-fn_plot_PSTH_basic_trials (Unit,PSTH, Param, 'ignore');
-
-
 %% Basic trials - Left and Right - Adaptive Average
 % Correct
-axes('position',[position_x(4), position_y(1), panel_width, panel_height]);
-fn_plot_PSTH_basic_trials (Unit,PSTHAdaptive, Param, []);
-
+axes('position',[position_x(1), position_y(1), panel_width, panel_height]);
+fn_plot_PSTH_basic_trials (Unit,PSTHAdaptive, Param, 'hit');
+text(-3.25, Unit.peak_fr*1.4,'Adaptive Avg.','FontSize',10,'HorizontalAlignment','right')
 % Correct vs Error
-axes('position',[position_x(5), position_y(1), panel_width, panel_height]);
+axes('position',[position_x(2), position_y(1), panel_width, panel_height]);
 fn_plot_PSTH_basic_trials (Unit,PSTHAdaptive, Param, 'miss');
 
 %'Correct vs No-lick'
-axes('position',[position_x(6), position_y(1), panel_width, panel_height]);
+axes('position',[position_x(3), position_y(1), panel_width, panel_height]);
 fn_plot_PSTH_basic_trials (Unit,PSTHAdaptive, Param, 'ignore');
+
+
+%% All  Left and Right trials grouped
+% Correct
+axes('position',[position_x(4), position_y(1), panel_width, panel_height]);
+fn_plot_PSTH_basic_trials (Unit,PSTHAverageLR, Param, 'hit');
+text(-3.25, Unit.peak_fr*1.4,'LR Avg.','FontSize',10,'HorizontalAlignment','right')
+
+% Correct vs Error
+axes('position',[position_x(5), position_y(1), panel_width, panel_height]);
+fn_plot_PSTH_basic_trials (Unit,PSTHAverageLR, Param, 'miss');
+
+%'Correct vs No-lick'
+axes('position',[position_x(6), position_y(1), panel_width, panel_height]);
+fn_plot_PSTH_basic_trials (Unit,PSTHAverageLR, Param, 'ignore');
 
 
 
@@ -178,16 +180,16 @@ title(sprintf('%.2f %% violations',pcnt_violation),'FontSize',8);
 
 %% Plot spike-waveform and width
 axes('position',[position_x(7)+0.03, position_y(1)-0.05, panel_width*0.3, panel_height*0.5]);
-waveform = - Unit.waveform;
+waveform =  Unit.waveform;
 xwave=linspace(0,(1000*numel(waveform)./Unit.sampling_fq),numel(waveform));
 plot(xwave, waveform);
 axis tight; grid on;
 title(sprintf('width = %.2f ms', Unit.spk_width_ms),'FontSize',8);
 set(gca,'FontSize',8);
 
-% %% Plot Raster for all trials
-% axes('position',[position_x(7)-0.05, position_y(2)-0.06, panel_width, panel_height]);
-% fn_plotSimpleRaster(Param, Spikes, Session)
+%% Plot Raster for all trials
+axes('position',[position_x(7), position_y(1)+0.08, panel_width*0.8, panel_height]);
+fn_plotSimpleRaster(Param, Spikes, Session)
 
 
 %% Plot Trial-type summary

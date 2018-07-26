@@ -51,7 +51,7 @@ if ~isempty(PSTH)
         idx_include = find(PSTHtype.num_trials_averaged >=mintrials_heirarclusters);
         psth_avg = PSTHtype.psth_avg(idx_include,:);
         if ~isempty(psth_avg)
-            psth_smooth = movmean(psth_avg ,[smooth_bins 0], 2, 'Endpoints','shrink');
+            psth_smooth = movmean(psth_avg ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
             psth_smooth = psth_smooth./peak_LR_hit_units(idx_include);
             psth = nanmean(psth_smooth,1);
             plot(time,psth, 'Color', PSTHtype.trialtype_rgb(1,:), 'LineWidth', 1);
