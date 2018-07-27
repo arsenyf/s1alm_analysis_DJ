@@ -1,4 +1,4 @@
-function [decoded_as_error,test_trial_num ] = fn_SVM_decoder_to_identify_error_trials(key)
+function [decoded_as_error,test_trial_num ] = fn_SVM_decoder_to_identify_LEFTerror_trials(key)
 decoded_as_error=[];
 test_trial_num=[];
 k.session=key.session;
@@ -11,7 +11,7 @@ if trial_type_info.stimtm_earlydelay~=1000
 elseif  trial_type_info.stimtm_latedelay~=1000
     distractor_time = trial_type_info.stimtm_latedelay;
 elseif strcmp(trial_type_info.trial_type_name,'l')
-    [decoded_as_error,test_trial_num ] = fn_SVM_decoder_to_identify_error_trials_no_distractor(key);
+    [decoded_as_error,test_trial_num ] = fn_SVM_decoder_to_identify_LEFTerror_trials_no_distractor(key);
     return
 else
     return
@@ -40,17 +40,15 @@ psth_t_u_tr =psth_t_u_tr(:,unit_num,:);
 
 
 tr_left_hit = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & k & 'trial_type_name ="l"' & 'outcome="hit"' & 'early_lick="no early"','trial', 'ORDER BY trial');
-tr_right_hit = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & k & 'trial_type_name ="r"' & 'outcome="hit"' & 'early_lick="no early"','trial', 'ORDER BY trial');
 
 tr_left_miss = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & k & 'trial_type_name ="l"' & 'outcome="miss"' & 'early_lick="no early"','trial', 'ORDER BY trial');
-tr_right_miss = fetchn(EXP.BehaviorTrial * EXP.SessionID * EXP.TrialName & k & 'trial_type_name ="r"' & 'outcome="miss"' & 'early_lick="no early"','trial', 'ORDER BY trial');
 
 
-left=  [tr_left_hit;tr_right_miss];
-right= [tr_right_hit;tr_left_miss];
+left=  [tr_left_hit];
+right= [tr_left_miss];
 
 smallest_set_num = min([numel(left),numel(right)]);
-if smallest_set_num<5
+if smallest_set_num<3
     return
 end
 
@@ -66,10 +64,10 @@ if sum(stable_cells)<5
     return
 end
 
-num_repeat = 100;
+num_repeat = 1;
 for i=1:1:num_repeat
-    left=  [datasample(left,smallest_set_num,'Replace',false)];
-    right= [datasample(right,smallest_set_num,'Replace',false)];
+%     left=  [datasample(left,smallest_set_num,'Replace',false)];
+%     right= [datasample(right,smallest_set_num,'Replace',false)];
     
     
     analyzed_trials=  [left;right];
