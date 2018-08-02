@@ -55,7 +55,7 @@ end
 xl=[-4 1];
 xlim(xl);
 ylim([floor(yl(1)),ceil(yl(2))]);
-xlabel ('Time (s)','Fontsize', 10);
-ylabel ('\Delta Firing rate (Hz)','Fontsize', 10);
-set(gca,'FontSize',10);
-text(-1.8,ceil(yl(2))*1.18,'Delay','FontSize',9);
+xlabel ('Time (s)','Fontsize', 7);
+ylabel ('\Delta Firing rate (Hz)','Fontsize', 7);
+set(gca,'FontSize',7);
+text(-1.8,ceil(yl(2))*1.18,'Delay','FontSize',6);

@@ -15,7 +15,7 @@ t_latedelay_stim = Param.parameter_value{(strcmp('t_latedelay_stim',Param.parame
 
 Selectivity = (PSTH_R - PSTH_L);
 
-if contains(flag,'absolute')
+if strcmp(flag,'absolute')
     Selectivity = abs(Selectivity);
     Selectivity = Selectivity./nanmax(Selectivity,[],2);
     ylabel(sprintf('Normalized \n%s \n%s\n(Hz)',flag, ylab));
@@ -24,8 +24,15 @@ if contains(flag,'absolute')
     y_max = round(100*nanmax([S.m+S.stem]))/100;
     y_min = min([0, round(100*nanmin([S.m+S.stem]))/100]);
     ylim([y_min,y_max]);
-    
-elseif contains(flag,'positive')
+elseif strcmp(flag,'absolute not normalized')
+    Selectivity = abs(Selectivity);
+    ylabel(sprintf('Not normalized \nabsolute \n%s\n(Hz)',ylab));
+    S.m=nanmean(Selectivity,1);
+    S.stem=nanstd(Selectivity,1)./sqrt(numel(Selectivity));
+    y_max = round(100*nanmax([S.m+S.stem]))/100;
+    y_min = min([0, round(100*nanmin([S.m+S.stem]))/100]);
+    ylim([y_min,y_max]);    
+elseif strcmp(flag,'positive')
     Selectivity = Selectivity./nanmax(abs(Selectivity),[],2);
     Selectivity(Selectivity<=0) = NaN;
     ylabel(sprintf('Normalized \n%s \n%s\n(Hz)',flag, ylab));
@@ -34,7 +41,7 @@ elseif contains(flag,'positive')
     y_max = round(100*nanmax([S.m+S.stem]))/100;
      y_min = min([0, round(100*nanmin([S.m+S.stem]))/100]);
     ylim([y_min,y_max]);
-elseif contains(flag,'negative')
+elseif strcmp(flag,'negative')
     Selectivity = Selectivity./nanmax(abs(Selectivity),[],2);
     Selectivity(Selectivity>0) = NaN;
     ylabel(sprintf('Normalized \n%s \n%s\n(Hz)',flag, ylab));
@@ -43,7 +50,7 @@ elseif contains(flag,'negative')
     y_max = eps;
     y_min = round(100*nanmin([S.m+S.stem]))/100;
     ylim([y_min,0]);
-elseif contains(flag,'')
+elseif strcmp(flag,'')
     ylabel(sprintf('%s \n%s\n(Hz)',flag, ylab));
     S.m=nanmean(Selectivity,1);
     S.stem=nanstd(Selectivity,1)./sqrt(numel(Selectivity));

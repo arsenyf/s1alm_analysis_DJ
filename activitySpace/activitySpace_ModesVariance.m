@@ -14,13 +14,13 @@ k=key;
 k.outcome='hit';
 
 k_proj.mode_weights_sign='all';
-k.session_uid=32;
+% k.session_uid=32;
 if contains(k.unit_quality, 'ok or good')
     k = rmfield(k,'unit_quality')
-    rel_PSTH = (( ANL.PSTHAverage * EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining  ) ) & ANL.IncludeUnit & k & 'unit_quality!="multi"' ;
+    rel_PSTH = (( ANL.PSTHAverageLR * EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining  ) ) & ANL.IncludeUnit & k & 'unit_quality!="multi"' ;
     rel_Proj = (( ANL.ProjTrialAverage * EXP.Session * EXP.SessionID  * EXP.SessionTraining  )) & k & k_proj & 'unit_quality="ok or good"' ;
 else
-    rel_PSTH = (( ANL.PSTHAverage * EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining  )) & ANL.IncludeUnit & k ;
+    rel_PSTH = (( ANL.PSTHAverageLR * EXP.Session * EXP.SessionID * EPHYS.Unit * EPHYS.UnitPosition * EPHYS.UnitCellType * EXP.SessionTraining  )) & ANL.IncludeUnit & k ;
     rel_Proj = (( ANL.ProjTrialAverage * EXP.Session * EXP.SessionID   * EXP.SessionTraining ) ) & k & k_proj;
 end
 
@@ -86,7 +86,7 @@ for i_s = 1:1:numel(session_uid)
 
     
     %fetch proj
-    mode_names = {'LateDelay', 'Stimulus','EarlyDelay Orthog.','Ramping Orthog.'};
+    mode_names = {'LateDelay', 'Stimulus Orthog.','EarlyDelay Orthog.','Ramping Orthog.'};
 %     mode_names = {'LateDelay', 'Stimulus','EarlyDelay ','Ramping Orthog.'};
 
     for i_m = 1:1:numel(mode_names)
@@ -95,8 +95,8 @@ for i_s = 1:1:numel(session_uid)
         proj_r(i_m,:) =  movmean((fetch1(rel_Proj & k_s & k_proj & 'trial_type_name="r"','proj_average')),[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
         proj_select(i_m,:) = proj_r(i_m,:) - proj_l(i_m,:);
         
-%         proj_l(i_m,:) = proj_l(i_m,:) - nanmean(proj_l (i_m,baseline_idx_time));
-%         proj_r(i_m,:) = proj_r(i_m,:) - nanmean(proj_r (i_m,baseline_idx_time));
+        proj_l(i_m,:) = proj_l(i_m,:) - nanmean(proj_l (i_m,baseline_idx_time));
+        proj_r(i_m,:) = proj_r(i_m,:) - nanmean(proj_r (i_m,baseline_idx_time));
 
     end
     
@@ -135,7 +135,7 @@ plot(time2plot,sum(selectivity_explained.m(:,:)),'-k','linewidth',1);
 xlabel('Time(s)');
 ylabel('Selectivity explained');
 xlim([time_start time_end]);
-ylim([0 1]);
+ylim([0 1.2]);
 
 axes('position',[position_x(2), position_y(1), panel_width, panel_height]);
 trialavg_var_explained.m = squeeze(nanmean(trialavg_v_explained,1));
@@ -150,7 +150,7 @@ plot(time2plot,sum(trialavg_var_explained.m(:,:)),'-k','linewidth',1);
 xlabel('Time(s)');
 ylabel('Variance explained');
 xlim([time_start time_end]);
-ylim([0 1]);
+ylim([0 1.2]);
 
 
 if contains(key.unit_quality, 'ok or good')

@@ -58,20 +58,23 @@ ds_stem = nanstd(delta_spikes,1)./sqrt(size(delta_spikes,1));
 
 hold on
 plot(stim_onset_vector, ds_mean,'.-','linewidth',2,'Color', colr);
-errorbar_myown( stim_onset_vector, ds_mean, ds_stem, ds_stem, '.k',  0.1 ) ;
+errorbar(stim_onset_vector, ds_mean, ds_stem, '-', 'Color',colr,'CapSize',4,'MarkerSize',6);
 
-% plot([t_go t_go], sz, 'k-','LineWidth',1.5);
-plot([-5 5], [0 0], 'k-','LineWidth',0.75);
+plot([t_go t_go], sz, 'k--','LineWidth',0.75);
 plot([t_chirp1 t_chirp1], sz, 'k--','LineWidth',0.75);
 plot([t_chirp2 t_chirp2], sz, 'k--','LineWidth',0.75);
 
-xl=[-4 0];
-xlim(xl);
-
-t = table( delta_spikes(:,1),delta_spikes(:,2),delta_spikes(:,3),delta_spikes(:,4),...
-    'VariableNames',{'meas1','meas2','meas3','meas4'});
-Time = stim_onset_vector';
-rm = fitrm(t,'meas1-meas4 ~ 1','WithinDesign',Time);
+if numel(stim_onset_vector) ==3
+    t = table( delta_spikes(:,1),delta_spikes(:,2),delta_spikes(:,3),...
+        'VariableNames',{'meas1','meas2','meas3'});
+    Time = stim_onset_vector';
+    rm = fitrm(t,'meas1-meas3 ~ 1','WithinDesign',Time);
+else numel(stim_onset_vector) ==4
+    t = table( delta_spikes(:,1),delta_spikes(:,2),delta_spikes(:,3),delta_spikes(:,4),...
+        'VariableNames',{'meas1','meas2','meas3','meas4'});
+    Time = stim_onset_vector';
+    rm = fitrm(t,'meas1-meas4 ~ 1','WithinDesign',Time);
+end
 ranovatbl = ranova(rm);
 ranovatbl.pValue
 if ranovatbl.pValue(1)<=0.05

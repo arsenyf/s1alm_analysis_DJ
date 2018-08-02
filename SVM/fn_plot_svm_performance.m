@@ -27,16 +27,17 @@ num=1;
 if ~isempty(svm_performance(num).all)
     shadedErrorBar(t,svm_performance(num).m,svm_performance(num).stem,'lineprops',{'m-','markerfacecolor','m','linewidth',1});
 end
-ylim([48 100]);
-xlim([t(1) 0.65]);
+ylim([50 100]);
+xlim([t(1) 1]);
 if legend_flag==1
-        text(1,100,'vS1 left','FontSize',8,'FontWeight','bold','Color',[0.5 0.5 0.5]);
-    text(1,90,'ALM left','FontSize',8,'FontWeight','bold','Color',[1 0 1]);
-    text(1,80,'ALM right','FontSize',8,'FontWeight','bold','Color',[0 0 0.8]);
+    text(1,100,'vS1 left','FontSize',6,'FontWeight','bold','Color',[0.5 0.5 0.5]);
+    text(1,90,'ALM left','FontSize',6,'FontWeight','bold','Color',[1 0 1]);
+    text(1,80,'ALM right','FontSize',6,'FontWeight','bold','Color',[0 0 0.8]);
+    xlabel('Time (s)','FontSize',6);
+    ylabel('Decoder perform. (%)','FontSize',6);
 end
 plot([-2.5,-2.5+0.4], [100,100],'-','linewidth',3,'color',[0 0 1],'Clipping','off');
 
-xlabel('Time (s)','FontSize',12);
-ylabel('Decoder perform. (%)','FontSize',12);
-set(gca,'YTick',[50, 75, 100],'FontSize',12);
+
+set(gca,'YTick',[50, 75, 100],'FontSize',6);
 box off;

@@ -23,6 +23,8 @@ horizontal_distance=0.075;
 vertical_distance=0.135;
 
 position_x(1)=0.2;
+position_x(2)=0.5;
+
 position_y(1)=0.8;
 position_y(2)=position_y(1)-vertical_distance;
 position_y(3)=position_y(2)-vertical_distance;
@@ -90,6 +92,10 @@ fn_plotSelectivity (Param,time, PSTH_L_hit ,PSTH_R_hit,'Selectiviy',flag)
 
 axes('position',[position_x(1), position_y(4), panel_width, panel_height]);
 flag='absolute'; %and normalized
+fn_plotSelectivity (Param,time, PSTH_L_hit ,PSTH_R_hit,'Selectiviy',flag)
+
+axes('position',[position_x(2), position_y(4), panel_width, panel_height]);
+flag='absolute not normalized'; 
 fn_plotSelectivity (Param,time, PSTH_L_hit ,PSTH_R_hit,'Selectiviy',flag)
 
 axes('position',[position_x(1), position_y(5), panel_width, panel_height]);
