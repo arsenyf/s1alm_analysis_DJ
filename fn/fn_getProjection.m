@@ -27,7 +27,7 @@ t_earlydelay_stim = Param.parameter_value{(strcmp('t_earlydelay_stim',Param.para
 t_latedelay_stim = Param.parameter_value{(strcmp('t_latedelay_stim',Param.parameter_name))};
 time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
 psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
-smooth_time = Param.parameter_value{(strcmp('smooth_time_proj2D',Param.parameter_name))};
+smooth_time =Param.parameter_value{(strcmp('smooth_time_proj2D',Param.parameter_name))};
 smooth_bins=ceil(smooth_time/psth_time_bin);
 mintrials_psth_typeoutcome= Param.parameter_value{(strcmp('mintrials_psth_typeoutcome',Param.parameter_name))};
 
@@ -89,8 +89,17 @@ end
 POUT.p = POUT.p - nanmean(POUT.p(:,1));
 POUT.mode_title = key_mode.mode_title;
 
+
+key_mode.outcome='hit';
+key_mode.trial_type_name='r';
+Proj_right_hit=cell2mat(fetchn(rel & key_mode,'proj_average','ORDER BY trialtype_plot_order DESC'));
+Proj_right_hit=nanmean(Proj_right_hit(idx_include,:),1);
+Proj_right_hit = movmean(Proj_right_hit ,[smooth_bins 0], 2, 'Endpoints','shrink');
+
+
 if flag_normalize_modes==1
-    POUT.p = POUT.p./max(abs(POUT.p(:)));
+%     POUT.p = POUT.p./nanmax(POUT.p(:));
+    POUT.p = POUT.p./nanmax(Proj_right_hit);
 end
 % ylabel (sprintf('%s (A.U.)',ylab),'Fontsize', 12);
 %

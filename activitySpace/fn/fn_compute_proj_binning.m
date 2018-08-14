@@ -1,4 +1,4 @@
-function p_norm = fn_compute_proj_binning (proj,all_proj,  tidx)
+function p_norm = fn_compute_proj_binning (proj,all_proj,  tidx, time)
 
 if isempty(proj.proj) || size(proj.outcome,1) <10
     p_norm.edges=[33:1:100]+NaN;
@@ -14,6 +14,9 @@ else
     %     end
     average_error_prob_all_trials = sum(contains(all_proj.outcome,'miss'))/numel(all_proj.outcome);
     all_projs=all_proj.proj;
+%     baseline=nanmean(all_projs(:,time>=-4 & time<-3),2);
+%     all_projs=all_projs-baseline;
+    
     all_projs=nanmean(all_projs(:,tidx),2);
     all_max =  nanmax(all_projs);
     all_min =  nanmin(all_projs);

@@ -22,7 +22,7 @@ position_y(2)=position_y(1)-vertical_distance;
 
 
 columns2plot=12;
-min_cluster_percent=1;
+min_cluster_percent=1.5;
 
 % fetch Param
 Param = struct2table(fetch (ANL.Parameters,'*'));
@@ -36,16 +36,18 @@ key.brain_area = 'ALM'
 key.hemisphere = 'both'
 key.training_type = 'distractor'
 key.unit_quality = 'ok or good' %'ok or good'
-key.cell_type = 'FS'
+key.cell_type = 'Pyr'
 
 
 k = key;
 if contains(k.unit_quality,'all')
    k = rmfield(k,'unit_quality');
 end
-
+if contains(k.training_type,'all')
+   k = rmfield(k,'training_type');
+end
 rel_unit=(EPHYS.Unit);
-rel_cluster = (ANL.UnitHierarCluster * rel_unit.proj('unit_quality->temp','unit_uid')) & k;
+rel_cluster = (ANL.UnitHierarCluster2 * rel_unit.proj('unit_quality->temp','unit_uid')) & k;
 key_cluster = fetch(rel_cluster);
 UnitCluster  = struct2table(fetch(rel_cluster,'*', 'ORDER BY unit_uid'));
 key_cluster = rmfield(key_cluster,{'hemisphere','brain_area','cell_type','unit_quality','training_type','heirar_cluster_time_st','heirar_cluster_time_end'});
@@ -53,7 +55,7 @@ idx_time2plot = (time>= UnitCluster.heirar_cluster_time_st(1)) & (time<=UnitClus
 time2plot = time(idx_time2plot);
 
 %fetch Unit
-Unit = struct2table(fetch((EPHYS.Unit * EPHYS.UnitPosition * EXP.SessionTraining * EXP.SessionID) & key_cluster,'*', 'ORDER BY unit_uid'));
+Unit = struct2table(fetch((EPHYS.Unit * EPHYS.UnitPosition * EXP.SessionTraining * EXP.SessionID ) & key_cluster,'*', 'ORDER BY unit_uid'));
 session_uid = unique(Unit.session_uid);
 
 L.labels = {'hit','miss','ignore'};
@@ -79,13 +81,13 @@ L.num_trials{2} = (fetchn(rel  & 'trial_type_name="l"', 'num_trials_averaged', '
 R.num_trials{2} = (fetchn(rel  & 'trial_type_name="r"', 'num_trials_averaged', 'ORDER BY unit_uid'));
 
 
-%% Ignore
-% fetch and smooth PSTH
-rel= ((ANL.PSTHAverageLR * EPHYS.Unit) & key_cluster) & 'outcome="ignore"';
-L.PSTH{3} = movmean(cell2mat(fetchn(rel  & 'trial_type_name="l"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
-R.PSTH{3} = movmean(cell2mat(fetchn(rel  & 'trial_type_name="r"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
-L.num_trials{3} = (fetchn(rel  & 'trial_type_name="l"', 'num_trials_averaged', 'ORDER BY unit_uid'));
-R.num_trials{3} = (fetchn(rel  & 'trial_type_name="r"', 'num_trials_averaged', 'ORDER BY unit_uid'));
+% %% Ignore
+% % fetch and smooth PSTH
+% rel= ((ANL.PSTHAverageLR * EPHYS.Unit) & key_cluster) & 'outcome="ignore"';
+% L.PSTH{3} = movmean(cell2mat(fetchn(rel  & 'trial_type_name="l"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+% R.PSTH{3} = movmean(cell2mat(fetchn(rel  & 'trial_type_name="r"', 'psth_avg', 'ORDER BY unit_uid')) ,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
+% L.num_trials{3} = (fetchn(rel  & 'trial_type_name="l"', 'num_trials_averaged', 'ORDER BY unit_uid'));
+% R.num_trials{3} = (fetchn(rel  & 'trial_type_name="r"', 'num_trials_averaged', 'ORDER BY unit_uid'));
 
 
 
@@ -163,11 +165,11 @@ for ii = cluster_order
     legend_flag=1;
     [~] = fn_plotCluster (plot_counter, columns2plot, Param,time2plot, idx2plot, idx_time2plot,  L, R, num, peak_FR, flag_xlabel, peak_LR_hit_units,ylab, legend_flag);
     
-    axes('position',[position_x(1)+horizontal_distance*(mod(plot_counter,columns2plot)), position_y(floor(plot_counter/columns2plot)+1)-0.2, panel_width, panel_height]);
-    flag_xlabel=1;
-    ylab='No lick'; num=3;
-    legend_flag=1;
-    [~] = fn_plotCluster (plot_counter, columns2plot, Param,time2plot, idx2plot, idx_time2plot,  L, R, num, peak_FR,flag_xlabel, peak_LR_hit_units,ylab, legend_flag);
+%     axes('position',[position_x(1)+horizontal_distance*(mod(plot_counter,columns2plot)), position_y(floor(plot_counter/columns2plot)+1)-0.2, panel_width, panel_height]);
+%     flag_xlabel=1;
+%     ylab='No lick'; num=3;
+%     legend_flag=1;
+%     [~] = fn_plotCluster (plot_counter, columns2plot, Param,time2plot, idx2plot, idx_time2plot,  L, R, num, peak_FR,flag_xlabel, peak_LR_hit_units,ylab, legend_flag);
     
     plot_counter = plot_counter +1;
     

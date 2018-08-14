@@ -1,4 +1,4 @@
-function  fn_plot_stimulus_quantification(rel, k,colr)
+function  fn_plot_stimulus_quantification(rel, k,colr, plot_r_flag)
 
 % fetch Param
 Param = struct2table(fetch (ANL.Parameters,'*'));
@@ -78,6 +78,6 @@ end
 ranovatbl = ranova(rm);
 ranovatbl.pValue
 if ranovatbl.pValue(1)<=0.05
-    tbl = multcompare(rm,'Time','ComparisonType','tukey-kramer')
+    tbl = multcompare(rm,'Time','ComparisonType','bonferroni')
 end
 
