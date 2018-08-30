@@ -58,28 +58,28 @@ subplot(2,2,1)
 histogram(FR_Pyr.Left.mean_fr_delay,hist_bins)
 xlabel('mean FR (Hz)');
 ylabel('Counts');
-title ('Pyr cells, left trials');
+title ('Pyr cells, left trials, Delay');
 xlim([0 max(hist_bins)]);
 
 subplot(2,2,2)
 histogram(FR_Pyr.Right.mean_fr_delay,hist_bins)
 xlabel('mean FR (Hz)');
 ylabel('Counts');
-title ('Pyr cells, right trials');
+title ('Pyr cells, right trials, Delay');
 xlim([0 max(hist_bins)]);
 
 subplot(2,2,3)
 histogram(FR_FS.Left.mean_fr_delay,hist_bins)
 xlabel('mean FR (Hz)');
 ylabel('Counts');
-title ('FS cells, left trials');
+title ('FS cells, left trials, Delay');
 xlim([0 max(hist_bins)]);
 
 subplot(2,2,4)
 histogram(FR_FS.Right.mean_fr_delay,hist_bins)
 xlabel('mean FR (Hz)');
 ylabel('Counts');
-title ('FS cells, right trials');
+title ('FS cells, right trials, Delay');
 xlim([0 max(hist_bins)]);
 
 
