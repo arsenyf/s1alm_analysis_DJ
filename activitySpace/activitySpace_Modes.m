@@ -4,7 +4,7 @@ function activitySpace_Modes()
 dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\'
 dir_save_figure = [dir_root 'Results\Population\activitySpace\Modes\projections\'];
 
-flag_single_sessions =0; % 1 to analyze single sessions, 0 to average across sessions
+flag_single_sessions =1; % 1 to analyze single sessions, 0 to average across sessions
 
 key.brain_area = 'ALM'
 key.hemisphere = 'left'
@@ -12,7 +12,7 @@ key.training_type = 'distractor'
 key.unit_quality = 'ok or good'
 key.cell_type = 'Pyr'
 key.mode_weights_sign = 'all';
-condition = 'full'
+condition = 'mini'
 
 
 

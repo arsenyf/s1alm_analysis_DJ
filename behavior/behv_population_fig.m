@@ -63,15 +63,15 @@ fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offse
 % Choosing which params & trial-types to display
 %--------------------------------------
 clear behav_param behav_param_mean behav_param_signif trn_r trn_l y_r y_l
-behav_param = b.prcnt_early;
+behav_param = b.RT_hit_mean;
 [behav_param_mean, behav_param_signif, trn_r, trn_l, y_r, y_l] = fn_choose_behav_trials(behav_param,trial_type_names, names_right_trials, names_left_trials);
 % Plotting 
 %-------------------------------------------
 axes('position',[position_x(1), position_y(3), panel_width, panel_height]);
 title(sprintf('Mini distractor - Regular mice \n %d mice, %d sessions',n_mice, n_sessions));
 fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offset, x_r, x_l, y_r, y_l, trn_r, trn_l )
-ylabel('Early (%)');
-ylim([0 50]);
+ylabel('RT (s)');
+ylim([0 0.5]);
 
 %% Regular on Full distractors
 % Fetching
@@ -100,15 +100,15 @@ fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offse
 % Choosing which params & trial-types to display
 %--------------------------------------
 clear behav_param behav_param_mean behav_param_signif trn_r trn_l y_r y_l
-behav_param = b.prcnt_early;
+behav_param = b.RT_hit_mean;
 [behav_param_mean, behav_param_signif, trn_r, trn_l, y_r, y_l] = fn_choose_behav_trials(behav_param,trial_type_names, names_right_trials, names_left_trials);
 % Plotting 
 %-------------------------------------------
 axes('position',[position_x(1), position_y(4), panel_width, panel_height]);
 title(sprintf('Full distractor - Regular mice \n %d mice, %d sessions',n_mice, n_sessions));
 fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offset, x_r, x_l, y_r, y_l, trn_r, trn_l )
-ylabel('Early (%)');
-ylim([0 50]);
+ylabel('RT (s)');
+ylim([0 0.5]);
 
 
 %% Expert on Mini distractors
@@ -138,16 +138,15 @@ fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offse
 % Choosing which params & trial-types to display
 %--------------------------------------
 clear behav_param behav_param_mean behav_param_signif trn_r trn_l y_r y_l
-behav_param = b.prcnt_early;
+behav_param = b.RT_hit_mean;
 [behav_param_mean, behav_param_signif, trn_r, trn_l, y_r, y_l] = fn_choose_behav_trials(behav_param,trial_type_names, names_right_trials, names_left_trials);
 % Plotting 
 %-------------------------------------------
 axes('position',[position_x(2), position_y(3), panel_width, panel_height]);
 title(sprintf('Mini distractor - Expert mice \n %d mice, %d sessions',n_mice, n_sessions));
 fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offset, x_r, x_l, y_r, y_l, trn_r, trn_l )
-ylabel('Early (%)');
-ylim([0 50]);
-
+ylabel('RT (s)');
+ylim([0 0.5]);
 
 
 %% Expert on Full distractors
@@ -177,16 +176,15 @@ fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offse
 % Choosing which params & trial-types to display
 %--------------------------------------
 clear behav_param behav_param_mean behav_param_signif trn_r trn_l y_r y_l
-behav_param = b.prcnt_early;
+behav_param = b.RT_hit_mean;
 [behav_param_mean, behav_param_signif, trn_r, trn_l, y_r, y_l] = fn_choose_behav_trials(behav_param,trial_type_names, names_right_trials, names_left_trials);
 % Plotting 
 %-------------------------------------------
 axes('position',[position_x(2), position_y(4), panel_width, panel_height]);
 title(sprintf('Full distractor - Expert mice \n %d mice, %d sessions',n_mice, n_sessions));
 fn_plot_behav_panel(behav_param,behav_param_mean, behav_param_signif, disp_offset, x_r, x_l, y_r, y_l, trn_r, trn_l )
-ylabel('Early (%)');
-ylim([0 50]);
-
+ylabel('RT (s)');
+ylim([0 0.5]);
 
 
 % Saving Figure
