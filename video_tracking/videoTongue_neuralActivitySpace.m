@@ -1,8 +1,9 @@
 function videoTongue_neuralActivitySpace()
 close all;
 
-dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\'
-% dir_save_figure = [dir_root 'Results\Population\activitySpace\Modes\Decoding_before_perturbation\'];
+dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\';
+dir_save_figure = [dir_root 'Results\video_tracking\analysis\'];
+
 
 figure;
 set(gcf,'DefaultAxesFontName','helvetica');
@@ -14,12 +15,13 @@ set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 -2 0 0]);
 Param = struct2table(fetch (ANL.Parameters,'*'));
 time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
 %     time_idx_2plot = (time >=-0.2 & time<0);
-time_idx_2plot = (time >=-0.2 & time<0);
+time_idx_2plot = (time >=-0.5 & time<0);
 
 key.brain_area = 'ALM';
 key.unit_quality = 'ok or good';
 key.cell_type = 'Pyr'
 key.training_type = 'distractor';
+key.outcome = 'hit';
 
 % key.subject_id = 365939;
 k=key;
@@ -27,7 +29,7 @@ k_estimation.tongue_estimation_type='center';
 
 k_proj.mode_weights_sign='all';
 
-session_uid=unique(fetchn(EXP.BehaviorTrial*EXP.SessionID & ANL.VideoLickOnsetTrial,'session_uid'));
+session_uid=unique(fetchn(EXP.BehaviorTrial*EXP.SessionID & ANL.VideoLickOnsetTrialNormalized,'session_uid'));
 
 mode_name{1}='LateDelay';
 mode_name{2}='Ramping Orthog.';
@@ -39,11 +41,11 @@ mode_name{2}='Ramping Orthog.';
 for i_s=1:1:numel(session_uid)
     V_2D=[];
     k_s.brain_area = 'ALM';  %k_s.session_uid=session_uid(i_s);
-    kk=fetch(EXP.BehaviorTrial * EXP.SessionID * EXP.SessionTraining & ANL.VideoLickOnsetTrial  & k  & 'early_lick="no early"' & 'outcome="miss"' & k_s );
+    kk=fetch(EXP.BehaviorTrial * EXP.SessionID * EXP.SessionTraining & ANL.VideoLickOnsetTrialNormalized  & k  & 'early_lick="no early"' & k_s,'*' , 'ORDER BY trial');
     %     animal=fetchn(EXP.Session*EXP.SessionID & k_s,'subject_id')
     %     date=fetchn(EXP.Session*EXP.SessionID & k_s,'session_date')
     
-    TONGUE = struct2table(fetch(ANL.VideoLickOnsetTrial & k_estimation & kk  ,'*', 'ORDER BY trial'));
+    TONGUE = struct2table(fetch(ANL.VideoLickOnsetTrialNormalized & k_estimation & kk  ,'*', 'ORDER BY trial'));
     
     idx_v= (TONGUE.first_lick_rt_video_peak)>=0;
     %         idx_v= (TONGUE.first_lick_rt_video_peak)>0.05 & (TONGUE.first_lick_rt_video_peak)<0.3;
@@ -69,13 +71,14 @@ for i_s=1:1:numel(session_uid)
     P(2).outlier = isoutlier(P(2).endpoint,'quartiles');
     P_outlier_idx = P(1).outlier | P(2).outlier;
     
-    P(1).endpoint=P(1).endpoint(~P_outlier_idx);
-    P(2).endpoint=P(2).endpoint(~P_outlier_idx);
-    TONGUE=TONGUE(~P_outlier_idx,:);
+    %     P(1).endpoint=P(1).endpoint(~P_outlier_idx);
+    %     P(2).endpoint=P(2).endpoint(~P_outlier_idx);
+    %     TONGUE=TONGUE(~P_outlier_idx,:);
     
     
     trial_type_name=fetchn(EXP.TrialName & kk,'trial_type_name', 'ORDER BY trial');
-    trial_type_name=trial_type_name(~P_outlier_idx,:);
+    trial_type_name=trial_type_name(idx_v);
+    %     trial_type_name=trial_type_name(~P_outlier_idx,:);
     
     un_name=unique(trial_type_name);
     
@@ -98,7 +101,7 @@ for i_s=1:1:numel(session_uid)
         
     end
     
-    idx_l=strcmp(trial_type_name,'r');
+    idx_l=strcmp(trial_type_name,'l_-3.8Full');
     hold on
     %     plot(P(1).endpoint, P(2).endpoint,'.b')
     %     plot(P(1).endpoint, P(2).endpoint,'.r')
@@ -112,35 +115,35 @@ for i_s=1:1:numel(session_uid)
     remove_unoccupied_bins=N*0;
     remove_unoccupied_bins(find(N(:)<minimal_occupancy))=NaN;
     
-    %     subplot(3,3,1)
-    ax1= subplot(3,3,1);
-    
-    V=(TONGUE.lick_yaw_peak_relative);
-    for i_x=1:1:numel(X_centers)
-        for i_y=1:1:numel(Y_centers)
-            V_2D(i_y,i_x) =mean(V(binX==i_x & binY==i_y));
-        end
-    end
-    V_2D=V_2D+remove_unoccupied_bins';
-    imagescnan(X_centers,Y_centers,V_2D)
-    set(gca,'YDir','normal')
-    hold on
-    %     plot(P(1).endpoint, P(2).endpoint,'.')
-    xlabel(mode_name{1});
-    ylabel(mode_name{2});
-    %     title(sprintf('%d %s suid=%d',animal,date, k_s.session_uid));
-    %     colormap(ax1,bluewhitered)
-    colormap(ax1,jet)
-    cb1 = colorbar(ax1);
-    
-    %     idxa=V<-10 | V>10
-    idxa=V>-20 & V<20;
-    %     plot(P(1).endpoint(idxa), P(2).endpoint(idxa),'.')
-    plot(P(1).endpoint, P(2).endpoint,'.b')
-    
-    plot(P(1).endpoint(idx_l), P(2).endpoint(idx_l),'.k')
-    
-    idx_l
+    %     %     subplot(3,3,1)
+    %     ax1= subplot(3,3,1);
+    %
+    %     V=(TONGUE.lick_yaw_peak_relative);
+    %     for i_x=1:1:numel(X_centers)
+    %         for i_y=1:1:numel(Y_centers)
+    %             V_2D(i_y,i_x) =mean(V(binX==i_x & binY==i_y));
+    %         end
+    %     end
+    %     V_2D=V_2D+remove_unoccupied_bins';
+    %     imagescnan(X_centers,Y_centers,V_2D)
+    %     set(gca,'YDir','normal')
+    %     hold on
+    %     %     plot(P(1).endpoint, P(2).endpoint,'.')
+    %     xlabel(mode_name{1});
+    %     ylabel(mode_name{2});
+    %     %     title(sprintf('%d %s suid=%d',animal,date, k_s.session_uid));
+    %     %     colormap(ax1,bluewhitered)
+    %     colormap(ax1,jet)
+    %     cb1 = colorbar(ax1);
+    %
+    %     %     idxa=V<-10 | V>10
+    %     idxa=V>-20 & V<20;
+    %     %     plot(P(1).endpoint(idxa), P(2).endpoint(idxa),'.')
+    %     plot(P(1).endpoint, P(2).endpoint,'.b')
+    %
+    %     plot(P(1).endpoint(idx_l), P(2).endpoint(idx_l),'.k')
+    %
+    %     idx_l
     % ax2=axes('position',[0.3 0.7  0.2 0.2]);
     
     ax2=     subplot(3,3,2);
@@ -163,6 +166,7 @@ for i_s=1:1:numel(session_uid)
     colormap(ax2,'jet')
     cb2 = colorbar(ax2);
     
+    title('Horizontal offset   (normalized)');
     
     
     ax3=subplot(3,3,3);
@@ -181,44 +185,82 @@ for i_s=1:1:numel(session_uid)
     ylabel(mode_name{2});
     colormap(ax3,'jet')
     cb3 = colorbar(ax3);
+    title('RT  (normalized)');
     
     
     
-    subplot(3,3,4)
-    hold on;
-    plot(P(1).endpoint,TONGUE.lick_yaw_peak_relative,'.')
-    plot(P(1).endpoint(idx_l),TONGUE.lick_yaw_peak_relative(idx_l),'.r')
-    xlabel(mode_name{1});
-    ylabel('Yaw (deg');
+    %     subplot(3,3,4)
+    %     hold on;
+    %     plot(P(1).endpoint,TONGUE.lick_yaw_peak_relative,'.')
+    %     plot(P(1).endpoint(idx_l),TONGUE.lick_yaw_peak_relative(idx_l),'.r')
+    %     xlabel(mode_name{1});
+    %     ylabel('Yaw (normalized)');
+    %         ylim([0 1]);
+    %     xlim([0 1]);
     
     subplot(3,3,5)
     hold on;
     plot(P(1).endpoint,TONGUE.lick_horizdist_peak_relative,'.')
-        plot(P(1).endpoint(idx_l),TONGUE.lick_horizdist_peak_relative(idx_l),'.r')
+    plot(P(1).endpoint(idx_l),TONGUE.lick_horizdist_peak_relative(idx_l),'.r')
     xlabel(mode_name{1});
-    ylabel('HoriztDist');
-    
-    subplot(3,3,6)
-    plot(P(1).endpoint,TONGUE.first_lick_rt_video_onset,'.')
-    xlabel(mode_name{1});
-    ylabel('RT(VideoOnset)');
-    
-    
-    subplot(3,3,7)
-    plot(P(2).endpoint,TONGUE.lick_yaw_peak_relative,'.')
-    xlabel(mode_name{2});
-    ylabel('Yaw (deg');
+    ylabel('Horizontal offset   (normalized)');
+    ylim([0 1]);
+    xlim([0 1]);
     
     subplot(3,3,8)
+    plot(P(1).endpoint,TONGUE.first_lick_rt_video_onset,'.')
+    xlabel(mode_name{1});
+    ylabel('RT   (normalized)');
+    ylim([0 1]);
+    xlim([0 1]);
+    
+    
+    %     subplot(3,3,7)
+    %     plot(P(2).endpoint,TONGUE.lick_yaw_peak_relative,'.')
+    %     xlabel(mode_name{2});
+    %     ylabel('Yaw (normalized)');
+    %         ylim([0 1]);
+    %     xlim([0 1]);
+    
+    subplot(3,3,6)
     plot(P(2).endpoint,TONGUE.lick_horizdist_peak_relative,'.')
     xlabel(mode_name{2});
-    ylabel('HoriztDist');
+    ylabel('Horizontal offset   (normalized)');
+    ylim([0 1]);
+    xlim([0 1]);
     
     subplot(3,3,9)
     plot(P(2).endpoint,TONGUE.first_lick_rt_video_onset	, '.')
     xlabel(mode_name{2});
-    ylabel('RT(VideoOnset)');
+    ylabel('RT   (normalized)');
+    ylim([0 1]);
+    xlim([0 1]);
     
-    histogram(TONGUE.first_lick_yaw_protrusion)
+    subplot(3,3,4)
+    histogram(TONGUE.lick_horizdist_peak_relative,[0:0.02:1]);
+    ylabel('Counts');
+    xlabel('Horizontal offset   (normalized)');
+    
+    subplot(3,3,7)
+    histogram(TONGUE.first_lick_rt_video_onset,[0:0.02:1]);
+    ylabel('Counts');
+    xlabel('RT   (normalized)');
+    
+    subplot(3,3,1)
+    %      plot(TONGUE.lick_horizdist_peak_relative,TONGUE.first_lick_rt_video_onset, '.')
+    plot(TONGUE.first_lick_amplitude		,TONGUE.first_lick_rt_video_onset, '.')
+    %     plot(TONGUE.lick_horizdist_peak_relative			,TONGUE.first_lick_amplitude, '.')
+    xlabel('Amplitude (normalized)');
+    ylabel('RT   (normalized)')
+    ylim([0 1]);
+    xlim([0 1]);
+    
+    if isempty(dir(dir_save_figure))
+        
+        mkdir (dir_save_figure)
+    end
+    filename=['tongue_neural_' key.training_type '_' key.outcome];
+    figure_name_out=[ dir_save_figure filename];
+    eval(['print ', figure_name_out, ' -dtiff -cmyk -r300']);
     clf
 end
