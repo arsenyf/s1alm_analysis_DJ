@@ -12,30 +12,36 @@ set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 -2 0 0]);
 
 
 
-key.training_type = 'distractor';
-key.outcome = 'miss';
-key.trialtype_flag_standard=1;
+% key.trialtype_flag_standard=0;
+% key.trialtype_flag_full=0;
 
-k_estimation.tongue_estimation_type='center';
+% key.brain_area = 'ALM';
+% key.hemisphere = 'Left';
 
-session_uid=unique(fetchn(EXP.BehaviorTrial*EXP.SessionID*EXP.SessionTraining & ANL.VideoLickOnsetTrialNormalized & key,'session_uid'));
+% key.training_type = 'distractor';
+key.outcome = 'hit';
+
+key.tongue_estimation_type='tip';
+k=key;
+
+
+session_uid=unique(fetchn( (EXP.SessionID*EXP.SessionTraining*ANL.SessionPosition) & ANL.Video1stLickTrialNormalized  & k,'session_uid'));
 
 for i_s=1:1:numel(session_uid)
-    V_2D=[];
     %     k_s.session_uid=session_uid(i_s);
-    k_s=[];
-    kk=fetch( (EXP.BehaviorTrial &  ANL.VideoLickOnsetTrialNormalized) * EXP.SessionID * EXP.SessionTraining & key & 'early_lick="no early"' & (EXP.TrialName & (ANL.TrialTypeGraphic & key)));
-    
-    
-    TONGUE = struct2table(fetch(ANL.VideoLickOnsetTrialNormalized & k_estimation & kk  ,'*', 'ORDER BY trial'));
-    idx_v= (TONGUE.first_lick_rt_video_peak)>=0;
+       
+    k_s = k;
+    rel_behav= ((EXP.BehaviorTrial * EXP.SessionID *EXP.Session* EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrialNormalized  & k  & 'early_lick="no early"' & k_s & (ANL.IncludeSession));
+    TONGUE = struct2table(fetch((ANL.Video1stLickTrialNormalized*EXP.TrialID) & rel_behav,'*' , 'ORDER BY trial_uid'));
+    idx_v= (TONGUE.lick_rt_video_peak)>=0;
     %     idx_v= (TONGUE.first_lick_rt_video_peak)>0.05 & (TONGUE.first_lick_rt_video_peak)<0.3;
     %     idx_v= (TONGUE.first_lick_rt_videoonset)>0.05 & (TONGUE.first_lick_rt_videoonset)<0.3;
     TONGUE=TONGUE(idx_v,:);
     %     plot(TONGUE.first_lick_yaw,TONGUE.first_lick_peak_x,'.')
     
-    trial_type_name=fetchn(EXP.TrialName & kk & (ANL.TrialTypeGraphic & key),'trial_type_name', 'ORDER BY trial');
+    trial_type_name=fetchn((EXP.TrialID*EXP.TrialName)&rel_behav,'trial_type_name', 'ORDER BY trial_uid');
     trial_type_name=trial_type_name(idx_v);
+    
     un_name=unique(trial_type_name);
     RT=[];
     YAW=[];
@@ -44,7 +50,7 @@ for i_s=1:1:numel(session_uid)
     for i_n = 1:1:numel(un_name)
         idx=contains(trial_type_name,un_name(i_n));
         
-        v=TONGUE.first_lick_rt_video_onset(idx);
+        v=TONGUE.lick_rt_video_onset(idx);
         if numel(v)<5
             continue
         end
@@ -55,23 +61,25 @@ for i_s=1:1:numel(session_uid)
         RT(i_n).stem=nanstd(v)./sqrt(numel(v));
         
         YAW(i_n).name=un_name(i_n);
-        v=TONGUE.lick_yaw_peak_relative(idx);
+        v=TONGUE.lick_yaw_relative(idx);
         YAW(i_n).value=v;
         YAW(i_n).median=nanmedian(v);
         YAW(i_n).stem=nanstd(v)./sqrt(numel(v));
         
         AMP(i_n).name=un_name(i_n);
-        v=TONGUE.first_lick_amplitude(idx);
+        v=TONGUE.lick_amplitude(idx);
         AMP(i_n).value=v;
         AMP(i_n).median=nanmedian(v);
         AMP(i_n).stem=nanstd(v)./sqrt(numel(v));
         
         YDIST(i_n).name=un_name(i_n);
-        v=TONGUE.lick_horizdist_peak_relative(idx);
+        v=TONGUE.lick_horizoffset_relative(idx);
         YDIST(i_n).value=v;
         YDIST(i_n).median=nanmedian(v);
         YDIST(i_n).stem=nanstd(v)./sqrt(numel(v));
     end
+    
+    
     subplot(2,2,1)
     hold on;
     c = categorical([RT.name]);
@@ -95,25 +103,24 @@ for i_s=1:1:numel(session_uid)
     errorbar(c,[YDIST.median],  [YDIST.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
     ylabel('Horizontal offset   (normalized)');
     
-    %
-    %     subplot(2,2,3)
-    %     hold on;
-    %     c = categorical([YAW.name]);
-    %     x = [YAW.median];
-    %     bar(c,x)
-    %     errorbar(c,[YAW.median],  [YAW.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
-    %     ylabel('Yaw (normalized)');
-    %
-    %     subplot(2,2,4)
-    %     hold on;
-    %     c = categorical([AMP.name]);
-    %     x = [AMP.median];
-    %     bar(c,x)
-    %     errorbar(c,[AMP.median],  [AMP.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
-    %     ylabel('Lick Amplitude (normalized)');
+    
+    subplot(2,2,3)
+    hold on;
+    c = categorical([YAW.name]);
+    x = [YAW.median];
+    bar(c,x)
+    errorbar(c,[YAW.median],  [YAW.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
+    ylabel('Yaw (normalized)');
+    
+    subplot(2,2,4)
+    hold on;
+    c = categorical([AMP.name]);
+    x = [AMP.median];
+    bar(c,x)
+    errorbar(c,[AMP.median],  [AMP.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
+    ylabel('Lick Amplitude (normalized)');
     %
     if isempty(dir(dir_save_figure))
-        
         mkdir (dir_save_figure)
     end
     filename=['tongue_behavior_' key.training_type '_' key.outcome];

@@ -31,7 +31,7 @@ k=key;
 
 k_proj.mode_weights_sign='all';
 
-session_uid=unique(fetchn( (EXP.SessionID*EXP.SessionTraining*ANL.SessionPosition) & ANL.Video1stLickTrialNormalized  & k,'session_uid'));
+session_uid=unique(fetchn( (EXP.SessionID*EXP.SessionTraining*ANL.SessionPosition) & ANL.Video1stLickTrial  & k,'session_uid'));
 
 mode_name{1}='LateDelay';
 mode_name{2}='Ramping Orthog.';
@@ -43,9 +43,9 @@ mode_name{2}='Ramping Orthog.';
 for i_s=1:1:numel(session_uid)
     V_2D=[];
     k_s = k;
-    rel_behav= ((EXP.BehaviorTrial * EXP.SessionID * EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrialNormalized  & k  & 'early_lick="no early"' & k_s & ANL.IncludeSession);
+    rel_behav= ((EXP.BehaviorTrial * EXP.SessionID * EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrial  & k  & 'early_lick="no early"' & k_s & ANL.IncludeSession);
     
-    TONGUE = struct2table(fetch((ANL.Video1stLickTrialNormalized*EXP.TrialID) & rel_behav,'*' , 'ORDER BY trial_uid'));
+    TONGUE = struct2table(fetch((ANL.Video1stLickTrial*EXP.TrialID) & rel_behav,'*' , 'ORDER BY trial_uid'));
     
     
     idx_v= (TONGUE.lick_rt_video_peak)>=0;
@@ -53,12 +53,8 @@ for i_s=1:1:numel(session_uid)
     
     num=1;
     k_proj.mode_type_name=mode_name{num};
-     
     rel_Proj = ((ANL.ProjTrialNormalized) & rel_behav & k_proj)*EXP.TrialID;
-    
-    tic
     proj_trial=cell2mat(fetchn(rel_Proj,'proj_trial', 'ORDER BY trial_uid'));
-    toc
     P(num).endpoint=mean(proj_trial(idx_v,time_idx_2plot),2);
     %     hist(endpoint)
     
@@ -66,8 +62,9 @@ for i_s=1:1:numel(session_uid)
     k_proj.mode_type_name=mode_name{num};
     rel_Proj = ((ANL.ProjTrialNormalized) & rel_behav & k_proj)*EXP.TrialID;
     proj_trial=cell2mat(fetchn(rel_Proj,'proj_trial', 'ORDER BY trial_uid'));
-    
     num_units_projected=fetchn(rel_Proj,'num_units_projected', 'ORDER BY trial_uid');
+    
+    
     include_proj_idx=num_units_projected>minimal_num_units_proj_trial;
     include_proj_idx=include_proj_idx(idx_v);
     P(num).endpoint=mean(proj_trial(idx_v,time_idx_2plot),2);
@@ -115,7 +112,7 @@ for i_s=1:1:numel(session_uid)
     %     Xedges=[0, 0.3:0.05:0.7, 1];
     %         Yedges=[0, 0.3:0.05:0.7, 1];
     
-    [N,Xedges,Yedges,binX,binY] = histcounts2(P(1).endpoint, P(2).endpoint,10);
+    [N,Xedges,Yedges,binX,binY] = histcounts2(P(1).endpoint, P(2).endpoint);
     X_centers=Xedges(1:end-1)+mean(diff(Xedges))/2;
     Y_centers=Yedges(1:end-1)+mean(diff(Yedges))/2;
     minimal_occupancy = 0.002*sum(N(:));
@@ -154,7 +151,7 @@ for i_s=1:1:numel(session_uid)
     % ax2=axes('position',[0.3 0.7  0.2 0.2]);
     
     ax2=     subplot(3,3,2);
-    V=abs(TONGUE.lick_horizoffset_relative-0.5);
+    V=abs(TONGUE.lick_yaw);
     for i_x=1:1:numel(X_centers)
         for i_y=1:1:numel(Y_centers)
             V_2D(i_y,i_x) =mean(V(binX==i_x & binY==i_y));
@@ -207,9 +204,9 @@ for i_s=1:1:numel(session_uid)
     
     subplot(3,3,5)
     hold on;
-    plot(P(1).endpoint,TONGUE.lick_horizoffset_relative,'.')
-    plot(P(1).endpoint(idx_1),TONGUE.lick_horizoffset_relative(idx_1),'.b')
-    plot(P(1).endpoint(idx_2),TONGUE.lick_horizoffset_relative(idx_2),'.r')
+    plot(P(1).endpoint,TONGUE.lick_yaw,'.')
+    plot(P(1).endpoint(idx_1),TONGUE.lick_yaw(idx_1),'.b')
+    plot(P(1).endpoint(idx_2),TONGUE.lick_yaw(idx_2),'.r')
     
     xlabel(mode_name{1});
     ylabel('Horizontal offset   (normalized)');
