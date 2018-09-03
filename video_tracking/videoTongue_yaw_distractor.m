@@ -12,13 +12,13 @@ set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 -2 0 0]);
 
 
 
-% key.trialtype_flag_standard=0;
+% key.trialtype_flag_standard=1;
 % key.trialtype_flag_full=0;
 
 % key.brain_area = 'ALM';
 % key.hemisphere = 'Left';
 
-% key.training_type = 'distractor';
+key.training_type = 'distractor';
 key.outcome = 'hit';
 
 key.tongue_estimation_type='tip';

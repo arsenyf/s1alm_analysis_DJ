@@ -1,19 +1,17 @@
-function videoTongue_yaw_distractor()
+function videoTongue_behavior()
 close all;
 
 dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\';
 dir_save_figure = [dir_root 'Results\video_tracking\analysis\'];
 
-flag_used_normalized_video=0; % 1 normalized, 0 non-normalized
+flag_used_normalized_video=1; % 1 normalized, 0 non-normalized
 
 % key.trialtype_flag_standard=0;
-% key.trialtype_flag_full=0;
+% key.trialtype_flag_full=1;
+% key.trialtype_left_and_right_no_distractors=0;
 
-% key.brain_area = 'ALM';
-% key.hemisphere = 'Left';
-
-% key.training_type = 'distractor';
-key.outcome = 'hit';
+key.training_type = 'distractor';
+% key.outcome = 'hit';
 
 key.tongue_estimation_type='tip';
 k=key;
@@ -65,36 +63,27 @@ for i_s=1:1:numel(session_uid)
     end
     
     idx_v= (TONGUE.lick_rt_video_peak)>=0;
-    %     idx_v= (TONGUE.first_lick_rt_video_peak)>0.05 & (TONGUE.first_lick_rt_video_peak)<0.3;
-    %     idx_v= (TONGUE.first_lick_rt_videoonset)>0.05 & (TONGUE.first_lick_rt_videoonset)<0.3;
     TONGUE=TONGUE(idx_v,:);
-    %     plot(TONGUE.first_lick_yaw,TONGUE.first_lick_peak_x,'.')
     
     
     VariableNames=TONGUE.Properties.VariableNames;
     var_table_offset=5;
     VariableNames=VariableNames(var_table_offset:18);
     
-    for i_v=1:1:numel(VariableNames);
-        
+    for i_v=1:1:numel(VariableNames)
         
         pos_x=mod(i_v,8)+floor(i_v/8);
         axes('position',[position_x1(pos_x), position_y1(i_v), panel_width1, panel_height1]);
         x=TONGUE{:,i_v+var_table_offset-1};
         idx_outlier = isoutlier(x,'quartiles');
         x=x(~idx_outlier);
-        %     histogram(x,[0:0.02:1]);
         h=histogram(x);
-        %         h.Normalization = 'countdensity';
         if flag_used_normalized_video==1
-            
             xl=[0 1];
         else
             xl= h.BinLimits;
         end
         xlim(xl);
-        
-        %         ylabel('Counts');
         vname=replace(VariableNames{i_v},'_',' ');
         vname=erase(vname,'lick');
         xlabel(vname);

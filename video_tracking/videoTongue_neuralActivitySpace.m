@@ -17,14 +17,14 @@ minimal_num_units_proj_trial = Param.parameter_value{(strcmp('minimal_num_units_
 time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
 
 % time_idx_2plot = (time >=0 & time<0.2);
-time_idx_2plot = (time >=-0.4 & time<0);
+time_idx_2plot = (time >=-0.2 & time<0);
 
 key.brain_area = 'ALM';
 % key.hemisphere = 'Left';
 
 key.unit_quality = 'ok or good';
 % key.cell_type = 'Pyr';
-key.training_type = 'distractor';
+key.training_type = 'regular';
 % key.outcome = 'hit';
 key.tongue_estimation_type='tip';
 k=key;
@@ -43,22 +43,17 @@ mode_name{2}='Ramping Orthog.';
 for i_s=1:1:numel(session_uid)
     V_2D=[];
     k_s = k;
-    rel_behav= ((EXP.BehaviorTrial * EXP.SessionID * EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrialNormalized  & k  & 'early_lick="no early"' & k_s & ANL.IncludeSession);
+    rel_behav= EXP.TrialID &((EXP.BehaviorTrial * EXP.SessionID * EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrialNormalized  & k  & 'early_lick="no early"' & k_s & ANL.IncludeSession);
+    TONGUE = struct2table(fetch((ANL.Video1stLickTrialNormalized & rel_behav)*EXP.TrialID,'*' , 'ORDER BY trial_uid'));
     
-    TONGUE = struct2table(fetch((ANL.Video1stLickTrialNormalized*EXP.TrialID) & rel_behav,'*' , 'ORDER BY trial_uid'));
-    
-    
-    idx_v= (TONGUE.lick_rt_video_peak)>=0;
+    idx_v= (TONGUE.lick_rt_video_onset)<=0.6;
     TONGUE=TONGUE(idx_v,:);
     
     num=1;
     k_proj.mode_type_name=mode_name{num};
      
     rel_Proj = ((ANL.ProjTrialNormalized) & rel_behav & k_proj)*EXP.TrialID;
-    
-    tic
     proj_trial=cell2mat(fetchn(rel_Proj,'proj_trial', 'ORDER BY trial_uid'));
-    toc
     P(num).endpoint=mean(proj_trial(idx_v,time_idx_2plot),2);
     %     hist(endpoint)
     
@@ -82,7 +77,7 @@ for i_s=1:1:numel(session_uid)
     
     
      
-    trial_type_name=fetchn((EXP.TrialID*EXP.TrialName)&rel_behav,'trial_type_name', 'ORDER BY trial_uid');
+    trial_type_name=fetchn((EXP.TrialName&rel_behav)*EXP.TrialID,'trial_type_name', 'ORDER BY trial_uid');
     trial_type_name=trial_type_name(idx_v);
     trial_type_name=trial_type_name(~P_outlier_idx & include_proj_idx,:);
     
@@ -115,7 +110,7 @@ for i_s=1:1:numel(session_uid)
     %     Xedges=[0, 0.3:0.05:0.7, 1];
     %         Yedges=[0, 0.3:0.05:0.7, 1];
     
-    [N,Xedges,Yedges,binX,binY] = histcounts2(P(1).endpoint, P(2).endpoint,10);
+    [N,Xedges,Yedges,binX,binY] = histcounts2(P(1).endpoint, P(2).endpoint);
     X_centers=Xedges(1:end-1)+mean(diff(Xedges))/2;
     Y_centers=Yedges(1:end-1)+mean(diff(Yedges))/2;
     minimal_occupancy = 0.002*sum(N(:));
