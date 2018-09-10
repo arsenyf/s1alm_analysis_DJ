@@ -81,7 +81,7 @@ if legalize_by_neighbor_bins_flag ==1
 else %if we don't want to legalize bins by its neighbors occupancy
     count_XY_video_smoothed_with_NaN=count_XY_video_smoothed  +count_XY_video_with_NaN.*0; %adds NaNs to unvisited locations
     field_density_smoothed_XY_with_NaN = (count_XY_spikes_smoothed ./ count_XY_video_smoothed_with_NaN);
-end;
+end
 
 %% Spatial Information
 %==========================================================================

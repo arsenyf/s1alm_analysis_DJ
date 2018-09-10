@@ -10,7 +10,7 @@ flag_used_normalized_video=1; % 1 normalized, 0 non-normalized
 % key.trialtype_flag_full=1;
 % key.trialtype_left_and_right_no_distractors=0;
 
-key.training_type = 'distractor';
+key.training_type = 'regular';
 % key.outcome = 'hit';
 
 key.tongue_estimation_type='tip';
@@ -26,7 +26,7 @@ set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 -2 0 0]);
 
 panel_width1=0.1;
 panel_height1=0.09;
-horizontal_distance1=0.13;
+horizontal_distance1=0.135;
 vertical_distance1=0.19;
 
 position_x1(1)=0.07;
@@ -37,10 +37,22 @@ position_x1(5)=position_x1(4)+horizontal_distance1;
 position_x1(6)=position_x1(5)+horizontal_distance1;
 position_x1(7)=position_x1(6)+horizontal_distance1;
 
-position_y1(1:14)=0.77;
+position_y1(1:14)=0.8;
 position_y1(8:14)=position_y1(1)-vertical_distance1;
 % position_y1(11:15)=position_y1(6)-vertical_distance1;
 
+horizontal_distance2=0.16;
+vertical_distance2=0.2;
+
+position_x2(1)=0.07;
+position_x2(2)=position_x2(1)+horizontal_distance2;
+position_x2(3)=position_x2(2)+horizontal_distance2;
+position_x2(4)=position_x2(3)+horizontal_distance2;
+position_x2(5)=position_x2(4)+horizontal_distance2;
+position_x2(6)=position_x2(5)+horizontal_distance2;
+
+position_y2(1:14)=0.4;
+position_y2(7:14)=position_y2(1)-vertical_distance2;
 
 
 
@@ -62,11 +74,11 @@ for i_s=1:1:numel(session_uid)
         TONGUE = struct2table(fetch((ANL.Video1stLickTrial*EXP.TrialID) & rel_behav,'*' , 'ORDER BY trial_uid'));
     end
     
-    idx_v= (TONGUE.lick_rt_video_peak)>=0;
+    idx_v= (TONGUE.lick_rt_video_onset)>=0;
     TONGUE=TONGUE(idx_v,:);
     
     
-    VariableNames=TONGUE.Properties.VariableNames;
+    VariableNames=TONGUE.Properties.VariableNames';
     var_table_offset=5;
     VariableNames=VariableNames(var_table_offset:18);
     
@@ -95,31 +107,41 @@ for i_s=1:1:numel(session_uid)
         end
     end
     
-    subplot(2,2,2)
-    hold on;
-    c = categorical([YDIST.name]);
-    x = [YDIST.median];
-    bar(c,x)
-    errorbar(c,[YDIST.median],  [YDIST.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
-    ylabel('Horizontal offset   (normalized)');
+    variables_pairs = [11,7; 11,3; 11,4; 11,5; 11,12; 11,13; 11,1; 3,4; 3,5; 3,12; 3,13; 3,1 ];
     
     
-    subplot(2,2,3)
-    hold on;
-    c = categorical([YAW.name]);
-    x = [YAW.median];
-    bar(c,x)
-    errorbar(c,[YAW.median],  [YAW.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
-    ylabel('Yaw (normalized)');
+    for i_v=1:1:size(variables_pairs,1)
+        
+        pos_x=mod(i_v,7)+floor(i_v/7);
+        axes('position',[position_x2(pos_x), position_y2(i_v), panel_width1, panel_height1]);
+        x=TONGUE{:,variables_pairs(i_v,1)+var_table_offset-1};
+        y=TONGUE{:,variables_pairs(i_v,2)+var_table_offset-1};
+        plot(x,y,'.')
+        %         idx_outlier = isoutlier(x,'quartiles');
+        %         x=x(~idx_outlier);
+        %         h=histogram(x);
+        if flag_used_normalized_video==1
+            xlim([0 1]);
+            ylim([0 1]);
+            set(gca,'Ytick',[0 1]);
+        end
+        %         xlim(xl);
+        vname=replace(VariableNames{variables_pairs(i_v,1)},'_',' ');
+        vname=erase(vname,'lick');
+        xlabel(vname);
+        
+        vname=replace(VariableNames{variables_pairs(i_v,2)},'_',' ');
+        vname=erase(vname,'lick');
+        ylabel(vname);
+        %
+        %         yl=[0 max(h.Values)];
+        %         ylim(yl);
+        
+    end
     
-    subplot(2,2,4)
-    hold on;
-    c = categorical([AMP.name]);
-    x = [AMP.median];
-    bar(c,x)
-    errorbar(c,[AMP.median],  [AMP.stem],'.', 'Color',[0 0 0],'CapSize',4,'MarkerSize',6);
-    ylabel('Lick Amplitude (normalized)');
-    %
+    X=table2array(TONGUE(:,5:18));
+    [coeff,score,latent] = pca(X);
+    
     if isempty(dir(dir_save_figure))
         mkdir (dir_save_figure)
     end
