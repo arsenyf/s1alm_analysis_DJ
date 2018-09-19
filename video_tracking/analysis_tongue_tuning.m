@@ -2,226 +2,246 @@ function analysis_tongue_tuning()
 close all;
 
 dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\';
-dir_save_figure = [dir_root 'Results\video_tracking\tuning2D\'];
+key.tuning_param_name='lick_horizoffset_relative';
+lick_direction= 'right';  %ANL.LickDirectionType
+dir_save_figure = [dir_root 'Results\video_tracking\tuning2D_equal_bins\' key.tuning_param_name '\' lick_direction '\'];
 
-Param = struct2table(fetch (ANL.Parameters,'*'));
-t_go = Param.parameter_value{(strcmp('t_go',Param.parameter_name))};
-t_chirp1 = Param.parameter_value{(strcmp('t_chirp1',Param.parameter_name))};
-t_chirp2 = Param.parameter_value{(strcmp('t_chirp2',Param.parameter_name))};
-t_sample_stim = Param.parameter_value{(strcmp('t_sample_stim',Param.parameter_name))};
-time = Param.parameter_value{(strcmp('psth_t_vector',Param.parameter_name))};
-psth_time_bin = Param.parameter_value{(strcmp('psth_time_bin',Param.parameter_name))};
-smooth_time = Param.parameter_value{(strcmp('smooth_time_cell_psth',Param.parameter_name))};
-smooth_bins=ceil(smooth_time/psth_time_bin);
-len = 0.4;
-sz = [0 200];
+flag_smooth_1D_display=0;
+flag_smooth_2D_display=1;
 
-xdat = [0 0 len len];
-ydat = [sz(1) sz(2) sz(2) sz(1)];
-
-
-
-figure1=figure;
+figure;
 set(gcf,'DefaultAxesFontName','helvetica');
 set(gcf,'PaperUnits','centimeters','PaperPosition',[0.5 7 21 21]);
 set(gcf,'PaperOrientation','portrait');
 set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 -10 0 0]);
 
-key_1D.smooth_flag=1;
-key_2D.smooth_flag=1;
+panel_width1=0.1;
+panel_height1=0.08;
+horizontal_distance1=0.2;
+vertical_distance1=0.16;
+
+position_x1(1)=0.1;
+position_x1(2)=position_x1(1)+horizontal_distance1;
+position_x1(3)=position_x1(2)+horizontal_distance1;
+position_x1(4)=position_x1(3)+horizontal_distance1;
+position_x1(5)=position_x1(4)+horizontal_distance1*0.8;
+position_x1(6)=position_x1(5)+horizontal_distance1;
+
+
+position_y1(1)=0.85;
+position_y1(2)=position_y1(1)-vertical_distance1;
+position_y1(3)=position_y1(2)-vertical_distance1*0.65;
+position_y1(4)=position_y1(3)-vertical_distance1*0.65;
+position_y1(5)=position_y1(4)-vertical_distance1*0.65;
+position_y1(6)=position_y1(5)-vertical_distance1*0.9;
+
 
 % key1.brain_area='ALM';
 % key1.hemisphere='left';
-key1.cell_type='Pyr';
-key2.outcome='all';
-key2.smooth_flag=1;
-key2.tuning_param_name_x='lick_horizoffset_relative';
-key2.tuning_param_name_y='lick_peak_x';
-key2.time_window_start=-0.4;
-rel1= (ANL.UnitTongue2DTuning*ANL.UnitTongue2DTuningSignificance & key2  & 'number_of_trials>100' & 'number_of_spikes_window>100' & 'stability_odd_even_corr_r>=0.5' & 'tongue_tuning_2d_peak_fr>3')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key1 ) ;
-key2.time_window_start=0;
-rel2=(ANL.UnitTongue2DTuning*ANL.UnitTongue2DTuningSignificance & key2  & 'number_of_trials>100' & 'number_of_spikes_window>100' & 'stability_odd_even_corr_r>=0.5' & 'tongue_tuning_2d_peak_fr>3')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key1 ) ;
+key.cell_type='Pyr';
+key.outcome_grouping='all';
+key.flag_use_basic_trials=0;
+key.smooth_flag=0;
+key.lick_direction=lick_direction;
+key_time1.time_window_start=round(-0.2,4);
+key_time2.time_window_start=round(0,4);
+if strcmp(lick_direction,'all')
+    rel1= (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance & key & key_time1  & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.01' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel2=(ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance & key & key_time2 & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.01')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+elseif strcmp(lick_direction,'left')
+    rel1= (ANL.UnitTongue1DTuningLRseparate*ANL.UnitTongue1DTuningSignificanceLRseparate & key & key_time1  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.01' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel2=(ANL.UnitTongue1DTuningLRseparate*ANL.UnitTongue1DTuningSignificanceLRseparate & key & key_time2  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.01')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+elseif strcmp(lick_direction,'right')
+    rel1= (ANL.UnitTongue1DTuningLRseparate*ANL.UnitTongue1DTuningSignificanceLRseparate & key & key_time1  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.01' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel2=(ANL.UnitTongue1DTuningLRseparate*ANL.UnitTongue1DTuningSignificanceLRseparate & key & key_time2  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.01')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+end
+
+key_1D=key;
+key_2D=key;
 
 relSignif=(EPHYS.Unit & 'unit_quality!="multi"') & (rel1 | rel2);
 
 UNITS=struct2table(fetch(relSignif*EPHYS.UnitPosition*EPHYS.UnitCellType ,'*','ORDER BY unit_uid'));
 
+time_window_start=([-0.2, 0]);
+% time_window_end=([0, 0.2]);
 
-time_window_start=([-0.4, 0]);
-time_window_end=([0, 0.2]);
-tuning_param_name{1}='lick_horizoffset_relative';
-tuning_param_name{2}='lick_peak_x';
-
-
-num=1;
-key_time.time_window_start=time_window_start(num);
-key_1D.tuning_param_name=tuning_param_name{1};
-TUNING{1}.X=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance  & relSignif & key_1D & key_time),'*','ORDER BY unit_uid'));
-key_1D.tuning_param_name=tuning_param_name{2};
-TUNING{1}.Y=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance  & relSignif & key_1D & key_time),'*','ORDER BY unit_uid'));
-TUNING{1}.XY=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue2DTuning*ANL.UnitTongue2DTuningSignificance  & relSignif & key_2D  & key_time),'*','ORDER BY unit_uid'));
-
-num=2;
-key_time.time_window_start=time_window_start(num);
-key_1D.tuning_param_name=tuning_param_name{1};
-TUNING{2}.X=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance  & relSignif & key_1D & key_time),'*','ORDER BY unit_uid'));
-key_1D.tuning_param_name=tuning_param_name{2};
-TUNING{2}.Y=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance  & relSignif & key_1D & key_time),'*','ORDER BY unit_uid'));
-TUNING{2}.XY=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue2DTuning*ANL.UnitTongue2DTuningSignificance  & relSignif  & key_2D & key_time),'*','ORDER BY unit_uid'));
+tuning_param_name_1D{1}='lick_horizoffset_relative';
+tuning_param_name_1D{2}='lick_peak_x';
+tuning_param_name_1D{3}='lick_rt_video_onset';
 
 
-histogram(TUNING{1}.XY.stability_odd_even_corr_r)
+tuning_param_name_2D.x{1}='lick_horizoffset_relative';
+tuning_param_name_2D.x{2}='lick_horizoffset_relative';
+% tuning_param_name_2D.x{3}='lick_yaw';
+tuning_param_name_2D.x{3}='lick_rt_video_onset';
+
+tuning_param_name_2D.y{1}='lick_rt_video_onset';
+tuning_param_name_2D.y{2}='lick_peak_x';
+tuning_param_name_2D.y{3}='lick_peak_x';
+
+if strcmp(key.lick_direction,'all')
+    rel_tuning = ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance;
+elseif strcmp(key.lick_direction,'left')
+    rel_tuning = ANL.UnitTongue1DTuningLRseparate*ANL.UnitTongue1DTuningSignificanceLRseparate;
+elseif strcmp(key.lick_direction,'right')
+    rel_tuning = ANL.UnitTongue1DTuningLRseparate*ANL.UnitTongue1DTuningSignificanceLRseparate;
+end
 
 
-hist_bins_centers=TUNING{1}.X.hist_bins_centers(1,:);
-hist_bins_centers_x=TUNING{1}.XY.hist_bins_centers_x (1,:);
-hist_bins_centers_y=TUNING{1}.XY.hist_bins_centers_y (1,:);
+for tnum=1:1:numel(time_window_start)
+    key_time.time_window_start=round(time_window_start(tnum),4);
+    
+    for oneDnum=1:1:numel(tuning_param_name_1D)
+        key_1D.tuning_param_name=tuning_param_name_1D{oneDnum};
+        TUNING{tnum}.oneD{oneDnum}=struct2table(fetch (EPHYS.Unit * ((rel_tuning)  & relSignif & key_time & key_1D ),'*','ORDER BY unit_uid'));
+    end
+    
+    for twoDnum=1:1:numel(tuning_param_name_2D.x)
+        key_2D.tuning_param_name_x=tuning_param_name_2D.x{twoDnum};
+        key_2D.tuning_param_name_y=tuning_param_name_2D.y{twoDnum};
+        TUNING{tnum}.twoD{twoDnum}=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue2DTuning  & relSignif  & key_2D & key_time),'*','ORDER BY unit_uid'));
+    end
+    
+end
 
-for i_u=1:1:size(TUNING{1}.X,1)
-    
-    num=1;
-    subplot(3,3,1)
-    X=TUNING{num}.X.tongue_tuning_1d(i_u,:);
-    stability=TUNING{num}.X.stability_odd_even_corr_r(i_u,:);
-    SI=TUNING{num}.X.tongue_tuning_1d_si(i_u,:);
-    pvalue=TUNING{num}.X.pvalue_si_1d(i_u,:);
-    plot(hist_bins_centers,X)
-    ylim([0,nanmax(X)]);
-    vname=replace(tuning_param_name{1},'_',' ');
-    vname=erase(vname,'lick');
-    xlabel(vname);
-    ylabel('FR (Hz)');
-    title(sprintf('uid= %d %s %s %s \n t wind=[%.1f,%.1f]\nr (odd,even)=%.2f \nI=%.2f b/s p= %.3f',UNITS.unit_uid(i_u),  UNITS.brain_area{i_u,1}, UNITS.hemisphere{i_u}, UNITS.cell_type{i_u}, time_window_start(num), time_window_end(num), stability, SI, pvalue));
-    
-    subplot(3,3,2)
-    Y=TUNING{num}.Y.tongue_tuning_1d(i_u,:);
-    stability=TUNING{num}.Y.stability_odd_even_corr_r(i_u,:);
-    SI=TUNING{num}.Y.tongue_tuning_1d_si(i_u,:);
-    pvalue=TUNING{num}.Y.pvalue_si_1d(i_u,:);
-    plot(hist_bins_centers,Y)
-    ylim([0,nanmax(Y)]);
-    vname=replace(tuning_param_name{2},'_',' ');
-    vname=erase(vname,'lick');
-    xlabel(vname);
-    ylabel('FR (Hz)');    ylabel('FR (Hz)');
-    title(sprintf('r (odd,even)=%.1f \nI=%.2f b/s p= %.3f',stability, SI, pvalue));
-    
-    subplot(3,3,3)
-    XY=TUNING{num}.XY.tongue_tuning_2d{i_u,:};
-    stability=TUNING{num}.XY.stability_odd_even_corr_r(i_u,:);
-    SI=TUNING{num}.XY.tongue_tuning_2d_si(i_u,:);
-    pvalue=TUNING{num}.XY.pvalue_si_2d(i_u,:);
-    imagescnan(hist_bins_centers_x,hist_bins_centers_y,XY')
-    set(gca,'YDir','normal')
-    hold on
-    colormap(jet);
-    colorbar;
-    caxis([0 nanmax(XY(:))])
-    vname=replace(tuning_param_name{1},'_',' ');
-    vname=erase(vname,'lick');
-    xlabel(vname);
-    vname=replace(tuning_param_name{2},'_',' ');
-    vname=erase(vname,'lick');
-    ylabel(vname);
-    title(sprintf('r (odd,even)=%.1f \nI=%.2f b/s  p= %.3f',stability, SI, pvalue));
-    
-    num=2;
-    subplot(3,3,4)
-    X=TUNING{num}.X.tongue_tuning_1d(i_u,:);
-    stability=TUNING{num}.X.stability_odd_even_corr_r(i_u,:);
-    SI=TUNING{num}.X.tongue_tuning_1d_si(i_u,:);
-    pvalue=TUNING{num}.X.pvalue_si_1d(i_u,:);
-    plot(hist_bins_centers,X)
-    ylim([0,nanmax(X)]);
-    vname=replace(tuning_param_name{1},'_',' ');
-    vname=erase(vname,'lick');
-    xlabel(vname);
-    ylabel('FR (Hz)');
-    title(sprintf('t wind=[%.1f,%.1f] \nr (odd,even)=%.2f \nI=%.2f b/s p= %.3f', time_window_start(num), time_window_end(num),stability, SI, pvalue));
-    
-    subplot(3,3,5)
-    Y=TUNING{num}.Y.tongue_tuning_1d(i_u,:);
-    stability=TUNING{num}.Y.stability_odd_even_corr_r(i_u,:);
-    SI=TUNING{num}.Y.tongue_tuning_1d_si(i_u,:);
-    pvalue=TUNING{num}.Y.pvalue_si_1d(i_u,:);
-    plot(hist_bins_centers,Y)
-    ylim([0,nanmax(Y)]);
-    vname=replace(tuning_param_name{2},'_',' ');
-    vname=erase(vname,'lick');
-    xlabel(vname);
-    ylabel('FR (Hz)');
-    title(sprintf('r (odd,even)=%.1f \nI=%.2f b/s p= %.3f',stability, SI, pvalue));
-    
-    subplot(3,3,6)
-    XY=TUNING{num}.XY.tongue_tuning_2d{i_u,:};
-    stability=TUNING{num}.XY.stability_odd_even_corr_r(i_u,:);
-    SI=TUNING{num}.XY.tongue_tuning_2d_si(i_u,:);
-    pvalue=TUNING{num}.XY.pvalue_si_2d(i_u,:);
-    imagescnan(hist_bins_centers_x,hist_bins_centers_y,XY')
-    set(gca,'YDir','normal')
-    hold on
-    colormap(jet);
-    colorbar;
-    caxis([0 nanmax(XY(:))])
-    vname=replace(tuning_param_name{1},'_',' ');
-    vname=erase(vname,'lick');
-    xlabel(vname);
-    vname=replace(tuning_param_name{2},'_',' ');
-    vname=erase(vname,'lick');
-    ylabel(vname);
-    title(sprintf('r (odd,even)=%.1f \nI=%.2f b/s  p= %.3f',stability, SI, pvalue));
+
+% for tnum=1:1:numel(time_window_start)
+%     key_time.time_window_start=round(time_window_start(tnum),4);
+%     
+%     for oneDnum=1:1:numel(tuning_param_name_1D)
+%         key_1D.tuning_param_name=tuning_param_name_1D{oneDnum};
+%         TUNING{tnum}.oneD{oneDnum}=struct2table(fetch (EPHYS.Unit * ((ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance)  & relSignif & key_time & key_1D ),'*','ORDER BY unit_uid'));
+%     end
+%     
+%     for twoDnum=1:1:numel(tuning_param_name_2D.x)
+%         key_2D.tuning_param_name_x=tuning_param_name_2D.x{twoDnum};
+%         key_2D.tuning_param_name_y=tuning_param_name_2D.y{twoDnum};
+%         TUNING{tnum}.twoD{twoDnum}=struct2table(fetch (EPHYS.Unit * (ANL.UnitTongue2DTuning  & relSignif  & key_2D & key_time),'*','ORDER BY unit_uid'));
+%     end
+%     
+% end
+
+
+
+
+
+for i_u=1:1:size(TUNING{1}.oneD{1},1)
     
     
+    axes('position',[position_x1(1), position_y1(1)+0.05, panel_width1, panel_height1]);
+    text(0,1,sprintf('unit = %d   %s  %s        %s significance based on %s direction',UNITS.unit_uid(i_u),UNITS.brain_area{i_u,1},UNITS.hemisphere{i_u}, UNITS.cell_type{i_u},lick_direction  ))
+    axis off
+    box off
+    
+    %% 1D tuning
+    oneDnum=1;
+    %%%
+    axes('position',[position_x1(oneDnum), position_y1(1), panel_width1, panel_height1]);
+    tnum=1;  yyaxis left;
+    fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key)
+    tnum=2; yyaxis right;
+    fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key)
+    %%%
+    y1(1)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
+    [yl(1,:)]=fn_plot_si_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec);
+    %%%
+    yy1(1)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
+    [yyl(1,:)]=fn_plot_si_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec);
+    %%%
+    axes('position',[position_x1(oneDnum), position_y1(4), panel_width1, panel_height1]);
+    fn_plot_stability_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key)
+    %%%
+    axes('position',[position_x1(oneDnum), position_y1(5), panel_width1, panel_height1]);
+    fn_plot_mld_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key)
     
     
+    oneDnum=2;
+    %%%
+    axes('position',[position_x1(oneDnum), position_y1(1), panel_width1, panel_height1]);
+    tnum=1;  yyaxis left;
+    fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key)
+    tnum=2; yyaxis right;
+    fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key)
+    %%%
+    y1(2)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
+    [yl(2,:)]=fn_plot_si_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec);
+    %%%
+    yy1(2)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
+    [yyl(2,:)]=fn_plot_si_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec);
+    %%%
+    axes('position',[position_x1(oneDnum), position_y1(4), panel_width1, panel_height1]);
+    fn_plot_stability_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key)
+    %%%
+    %     axes('position',[position_x1(oneDnum), position_y1(5), panel_width1, panel_height1]);
+    %     fn_plot_mld_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key)
     
-    subplot(3,3,7)
-    title('Correct trials');
-    key_psth.outcome='hit';
-    hold on;
-    plot([t_go t_go], sz, 'k-','LineWidth',1.5);
-    plot([t_chirp1 t_chirp1], sz, 'k--','LineWidth',0.75);
-    plot([t_chirp2 t_chirp2], sz, 'k--','LineWidth',0.75);
-    key_psth.unit_uid=TUNING{num}.X.unit_uid(i_u);
-    key_psth.trial_type_name='l';
-    p=fetch1(ANL.PSTHAverageLR & (EPHYS.Unit&key_psth) & key_psth,'psth_avg');
-    p=movmean(p,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
-    plot(time,p,'r')
-    peak(1)=nanmax(p);
     
-    key_psth.trial_type_name='r';
-    p=fetch1(ANL.PSTHAverageLR & (EPHYS.Unit&key_psth) & key_psth,'psth_avg');
-    p=movmean(p,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
-    plot(time,p,'b');
-    peak(2)=nanmax(p);
-    xlim([-4,2]);
-    ylim([0 nanmax(peak)]);
-    ylabel ('FR (Hz)','Fontsize', 12);
-    xlabel ('Time (s)','Fontsize', 12);
+    oneDnum=3;
+    %%%
+    axes('position',[position_x1(oneDnum), position_y1(1), panel_width1, panel_height1]);
+    tnum=1;  yyaxis left;
+    fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key)
+    tnum=2; yyaxis right;
+    fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key)
+    %%%
+    y1(3)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
+    [yl(3,:)]=fn_plot_si_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec);
+    %%%
+    yy1(3)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
+    [yyl(3,:)]=fn_plot_si_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec);
+    %%%
+    axes('position',[position_x1(oneDnum), position_y1(4), panel_width1, panel_height1]);
+    fn_plot_stability_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key)
+    %%%
+    %     axes('position',[position_x1(oneDnum), position_y1(5), panel_width1, panel_height1]);
+    %     fn_plot_mld_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key)
     
-    subplot(3,3,8)
-    title('Error trials');
-    key_psth.outcome='miss';
-    hold on;
-    plot([t_go t_go], sz, 'k-','LineWidth',1.5);
-    plot([t_chirp1 t_chirp1], sz, 'k--','LineWidth',0.75);
-    plot([t_chirp2 t_chirp2], sz, 'k--','LineWidth',0.75);
-    key_psth.unit_uid=TUNING{num}.X.unit_uid(i_u);
-    key_psth.trial_type_name='l';
-    p=fetch1(ANL.PSTHAverageLR & (EPHYS.Unit&key_psth) & key_psth,'psth_avg');
-    p=movmean(p,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
-    plot(time,p,'r')
-    peak(1)=nanmax(p);
+    set(y1(1),'Ylim',[0 max(yl(:,2))]);
+    set(y1(2),'Ylim',[0 max(yl(:,2))]);
+    set(y1(3),'Ylim',[0 max(yl(:,2))]);
     
-    key_psth.trial_type_name='r';
-    p=fetch1(ANL.PSTHAverageLR & (EPHYS.Unit&key_psth) & key_psth,'psth_avg');
-    p=movmean(p,[smooth_bins 0], 2, 'omitnan','Endpoints','shrink');
-    plot(time,p,'b');
-    peak(2)=nanmax(p);
-    xlim([-4,2]);
-    ylim([0 nanmax(peak)]);
-    ylabel ('FR (Hz)','Fontsize', 12);
-    xlabel ('Time (s)','Fontsize', 12);
+    set(yy1(1),'Ylim',[0 max(yyl(:,2))]);
+    set(yy1(2),'Ylim',[0 max(yyl(:,2))]);
+    set(yy1(3),'Ylim',[0 max(yyl(:,2))]);
+    
+    %% PSTHs
+    axes('position',[position_x1(1), position_y1(6), panel_width1, panel_height1]);
+    fn_plot_PSTH_video (TUNING, i_u, 'hit')
+    
+    axes('position',[position_x1(2), position_y1(6), panel_width1, panel_height1]);
+    fn_plot_PSTH_video (TUNING, i_u, 'miss')
+    
+    
+    %% 2D tuning
+    twoDnum=1;
+    %%%
+    axes('position',[position_x1(4), position_y1(2), panel_width1*1.2, panel_height1]);
+    tnum=1;
+    fn_plot_2Dtuning (TUNING, i_u, tnum, time_window_start, twoDnum, flag_smooth_2D_display)
+    axes('position',[position_x1(5), position_y1(2), panel_width1*1.2, panel_height1]);
+    tnum=2;
+    fn_plot_2Dtuning (TUNING, i_u, tnum, time_window_start, twoDnum, flag_smooth_2D_display)
+    
+    twoDnum=2;
+    %%%
+    axes('position',[position_x1(4), position_y1(1), panel_width1*1.2, panel_height1]);
+    tnum=1;
+    fn_plot_2Dtuning (TUNING, i_u, tnum, time_window_start, twoDnum, flag_smooth_2D_display)
+    axes('position',[position_x1(5), position_y1(1), panel_width1*1.2, panel_height1]);
+    tnum=2;
+    fn_plot_2Dtuning (TUNING, i_u, tnum, time_window_start, twoDnum, flag_smooth_2D_display)
+    
+    twoDnum=3;
+    %%%
+    axes('position',[position_x1(4), position_y1(twoDnum)-0.05, panel_width1*1.2, panel_height1]);
+    tnum=1;
+    fn_plot_2Dtuning (TUNING, i_u, tnum, time_window_start, twoDnum, flag_smooth_2D_display)
+    axes('position',[position_x1(5), position_y1(twoDnum)-0.05, panel_width1*1.2, panel_height1]);
+    tnum=2;
+    fn_plot_2Dtuning (TUNING, i_u, tnum, time_window_start, twoDnum, flag_smooth_2D_display)
+    
+    
     
     filename = [UNITS.brain_area{i_u,1} UNITS.hemisphere{i_u} UNITS.cell_type{i_u} num2str(UNITS.unit_uid(i_u)) '_tuning2D'];
     
@@ -238,29 +258,3 @@ for i_u=1:1:size(TUNING{1}.X,1)
     
     clf
 end
-
-[p12, p1, p2] = estpab(vec1,vec2)
-
-key=[];
-key.brain_area='ALM';
-% key.hemisphere='right';
-key.outcome='all';
-key.flag_use_basic_trials=0;
-% figure
-% x=(fetchn( ANL.TongueMLdecoder*ANL.SessionPosition& key,'time_vector_ml'));
-% x=x{1}';
-% y=(cell2mat(fetchn( ANL.TongueMLdecoder*ANL.SessionPosition& key,'ml_performance_left_at_t')));
-% y=y-y(:,1)
-%  y=mean(y)
-% plot(x,y)
-
-figure
-x=(fetchn( ANL.TongueSVMbinarydecoder*ANL.SessionPosition & key,'time_vector'));
-x=x{1}';
-y=(cell2mat(fetchn( ANL.TongueSVMbinarydecoder*ANL.SessionPosition & key,'performance_right_at_t')));
-y=y-y(:,1)
- y=nanmean(y)
-plot(x,y)
-
-
-

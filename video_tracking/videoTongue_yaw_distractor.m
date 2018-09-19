@@ -12,14 +12,18 @@ set(gcf,'Units','centimeters','Position',get(gcf,'paperPosition')+[3 -2 0 0]);
 
 
 
-% key.trialtype_flag_standard=1;
+key.trialtype_flag_standard=1;
 % key.trialtype_flag_full=0;
+
+key.session_flag_full=1;
+% key.session_flag_full_late=1;
+% key.session_flag_mini=1;
 
 % key.brain_area = 'ALM';
 % key.hemisphere = 'Left';
 
 key.training_type = 'distractor';
-key.outcome = 'hit';
+key.outcome = 'miss';
 
 key.tongue_estimation_type='tip';
 k=key;
@@ -31,8 +35,8 @@ for i_s=1:1:numel(session_uid)
     %     k_s.session_uid=session_uid(i_s);
        
     k_s = k;
-    rel_behav= ((EXP.BehaviorTrial * EXP.SessionID *EXP.Session* EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrialNormalized  & k  & 'early_lick="no early"' & k_s & (ANL.IncludeSession));
-    TONGUE = struct2table(fetch((ANL.Video1stLickTrialNormalized*EXP.TrialID) & rel_behav,'*' , 'ORDER BY trial_uid'));
+    rel_behav= ((EXP.BehaviorTrial * EXP.SessionID *EXP.Session* EXP.SessionTraining *ANL.SessionPosition*ANL.SessionGrouping * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrialNormalized  & k  & 'early_lick="no early"' & k_s) ;
+    TONGUE = struct2table(fetch((ANL.Video1stLickTrialNormalized*EXP.TrialID*EXP.TrialName) & rel_behav,'*' , 'ORDER BY trial_uid'));
     idx_v= (TONGUE.lick_rt_video_peak)>=0;
     %     idx_v= (TONGUE.first_lick_rt_video_peak)>0.05 & (TONGUE.first_lick_rt_video_peak)<0.3;
     %     idx_v= (TONGUE.first_lick_rt_videoonset)>0.05 & (TONGUE.first_lick_rt_videoonset)<0.3;
@@ -48,7 +52,7 @@ for i_s=1:1:numel(session_uid)
     AMP=[];
     YDIST=[];
     for i_n = 1:1:numel(un_name)
-        idx=contains(trial_type_name,un_name(i_n));
+        idx=strcmp(trial_type_name,un_name(i_n));
         
         v=TONGUE.lick_rt_video_onset(idx);
         if numel(v)<5
