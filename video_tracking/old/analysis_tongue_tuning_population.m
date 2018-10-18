@@ -69,13 +69,13 @@ for tnum=1:1:numel(time_window_start)
     key_time.time_window_start=time_window_start(tnum);
     for oneDnum=1:1:numel(tuning_param_name_1D)
         key_1D.tuning_param_name=tuning_param_name_1D{oneDnum};
-        rel1= (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo & key_1D & key_time & key & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.01' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+        rel1= (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance & key_1D & key_time & key & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.01' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
         relSignif_temp=(EPHYS.Unit & 'unit_quality!="multi"') & rel1;
 %         relAll=EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance   & key_1D & key_time & key) & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
         
         for oneDnum2=1:1:numel(tuning_param_name_1D)
            key_1D.tuning_param_name=tuning_param_name_1D{oneDnum2};
-           relSignif=EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo  & relSignif_temp & key_1D & key_time & key) & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+           relSignif=EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance  & relSignif_temp & key_1D & key_time & key) & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
 
             SI(tnum,oneDnum).values(:,oneDnum2)=((fetchn(relSignif,'tongue_tuning_1d_si','ORDER BY unit_uid')));
             %         SI_all(tnum,oneDnum).values=((fetchn(relAll ,'tongue_tuning_1d_si','ORDER BY unit_uid')));
@@ -86,7 +86,7 @@ for tnum=1:1:numel(time_window_start)
     end
 end
 
-tuning_param_name_1D{1}='lick_horizoffset';
+tuning_param_name_1D{1}='lick_horizoffset_relative';
 tuning_param_name_1D{2}='lick_peak_x';
 tuning_param_name_1D{3}='lick_rt_video_onset';
 % Conjunctive tuning  - spatial information
@@ -98,8 +98,8 @@ pairs.y(1)=2;
 pairs.y(2)=3;
 pairs.y(3)=2;
 
-pairs_name.x{1}='lick_horizoffset';
-pairs_name.x{2}='lick_horizoffset';
+pairs_name.x{1}='lick_horizoffset_relative';
+pairs_name.x{2}='lick_horizoffset_relative';
 pairs_name.x{3}='lick_rt_video_onset';
 
 pairs_name.y{1}='lick_peak_x';
@@ -183,17 +183,17 @@ PROPORTION_signif=[];
 
 %% 1D tuning population
 
-time_window_start=round([-3:0.1:2],4);
+time_window_start=round([-2.8:0.2:1],4);
 
 for tnum=1:1:numel(time_window_start)
     key_time.time_window_start=time_window_start(tnum);
     
     for oneDnum=1:1:numel(tuning_param_name_1D)
         key_1D.tuning_param_name=tuning_param_name_1D{oneDnum};
-        rel1= (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo & key_1D & key_time & key & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.01' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+        rel1= (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance & key_1D & key_time & key & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.01' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
         relSignif_temp=(EPHYS.Unit & 'unit_quality!="multi"') & rel1;
-        relSignif=EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo  & relSignif_temp & key_1D & key_time & key) & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
-        relAll=EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo   & key_1D & key_time & key) & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+        relSignif=EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance  & relSignif_temp & key_1D & key_time & key) & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+        relAll=EPHYS.Unit * (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificance   & key_1D & key_time & key) & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
         
         SI.mean(tnum,oneDnum)=nanmedian((fetchn(relSignif,'tongue_tuning_1d_si','ORDER BY unit_uid')));
         SI_all.mean(tnum,oneDnum)=nanmedian((fetchn(relAll ,'tongue_tuning_1d_si','ORDER BY unit_uid')));

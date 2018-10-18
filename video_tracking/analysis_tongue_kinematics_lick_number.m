@@ -1,12 +1,13 @@
-function analysis_tongue_kinematics()
+function analysis_tongue_kinematics_lick_number()
 close all;
 
 dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\';
-dir_save_figure = [dir_root 'Results\video_tracking\analysis\'];
+dir_save_figure = [dir_root 'Results\video_tracking\analysis\tongue_kinematics\lick_number\'];
 
 key.tongue_estimation_type='tip';
-key.lick_direction='right';
+key.lick_direction='left';
 flag_used_normalized_video=0; % 1 normalized, 0 non-normalized
+key.lick_number=10;
 
 % key.trialtype_flag_standard=0;
 % key.trialtype_flag_full=1;
@@ -17,12 +18,6 @@ flag_used_normalized_video=0; % 1 normalized, 0 non-normalized
 
 
 k=key;
-
-if strcmp(k.lick_direction,'all')
-    k=rmfield(k,'lick_direction');
-end
-
-
 
 figure;
 set(gcf,'DefaultAxesFontName','helvetica');
@@ -58,7 +53,7 @@ position_x2(5)=position_x2(4)+horizontal_distance2;
 position_x2(6)=position_x2(5)+horizontal_distance2;
 position_x2(7)=position_x2(6)+horizontal_distance2;
 
-position_y2(1:14)=0.55;
+position_y2(1:14)=0.5;
 position_y2(7:14)=position_y2(1)-vertical_distance2;
 
 
@@ -77,29 +72,24 @@ position_y3(2)=position_y3(1)-vertical_distance3;
 
 
 
-session_uid=unique(fetchn( (EXP.SessionID*EXP.SessionTraining*ANL.SessionPosition) & ANL.Video1stLickTrial  & k,'session_uid'));
-for i_s=1%:1:numel(session_uid)
-    %     k_s.session_uid=session_uid(i_s);
-    
-    k_s = k;
     
     if flag_used_normalized_video==1
-        rel_behav= ((EXP.BehaviorTrial * EXP.SessionID *EXP.Session* EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrialNormalized  & k  & 'early_lick="no early"' & k_s & (ANL.IncludeSession));
-        TONGUE = struct2table(fetch((ANL.Video1stLickTrialNormalized*EXP.TrialID) & rel_behav & (ANL.LickDirectionTrial & k_s),'*' , 'ORDER BY trial_uid'));
+        rel_behav= ((EXP.BehaviorTrial * EXP.SessionID *EXP.Session* EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.VideoLickNumberTrialNormalized  & k  & 'early_lick="no early"' & (ANL.IncludeSession));
+        TONGUE = struct2table(fetch((ANL.VideoLickNumberTrialNormalized*EXP.TrialID) & rel_behav & k,'*' , 'ORDER BY trial_uid'));
     else
-        rel_behav= ((EXP.BehaviorTrial * EXP.SessionID *EXP.Session* EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.Video1stLickTrial  & k  & 'early_lick="no early"' & k_s & (ANL.IncludeSession));
-        TONGUE = struct2table(fetch((ANL.Video1stLickTrial*EXP.TrialID) & rel_behav & (ANL.LickDirectionTrial & k_s),'*' , 'ORDER BY trial_uid'));
+        rel_behav= ((EXP.BehaviorTrial * EXP.SessionID *EXP.Session* EXP.SessionTraining *ANL.SessionPosition * EXP.TrialName  * ANL.TrialTypeGraphic) & ANL.VideoLickNumberTrial  & k  & 'early_lick="no early"'  & (ANL.IncludeSession));
+        TONGUE = struct2table(fetch((ANL.VideoLickNumberTrial*EXP.TrialID) & rel_behav & k,'*' , 'ORDER BY trial_uid'));
     end
     
-    idx_v= (TONGUE.lick_rt_video_onset)<=0.5;
-    TONGUE=TONGUE(idx_v,:);
+%     idx_v= (TONGUE.lick_rt_video_onset)<=0.5;
+%     TONGUE=TONGUE(idx_v,:);
     
     
     VariableNames=TONGUE.Properties.VariableNames';
-    var_table_offset=5;
+    var_table_offset=7;
     VariableNames=VariableNames(var_table_offset:end-1);
     
-    for i_v=1:1:numel(VariableNames)-1
+    for i_v=1:1:numel(VariableNames)
         
         pos_x=mod(i_v,8)+floor(i_v/8);
         axes('position',[position_x1(pos_x), position_y1(i_v), panel_width1, panel_height1]);
@@ -125,7 +115,7 @@ for i_s=1%:1:numel(session_uid)
     end
     
     T=TONGUE(:,var_table_offset:end-1);
-    variables_pairs = [11,1; 11,4; 11,6; 11,14; 11,12; 12,15; 1,3; 1,4; 1,6; 1,14; 1,15; 1,12];
+    variables_pairs = [11,1; 11,4; 11,6; 11,14;  11,13; 11,12; 1,3; 1,4; 1,6; 1,14; 1,13; 1,12];
     
     
     
@@ -174,79 +164,17 @@ for i_s=1%:1:numel(session_uid)
     end
     
     
-    %% PCA on x,y, onset
-    T_selected=T(:,[1,12,14]);
-    X=table2array(T_selected);
-    X(isnan(X))=0;
-    X=zscore(X,0,1);
-    [coeff,score,~, ~, explained] = pca(X);
-    %        [U,S,V]  = svd(X);
-    %     [L1,TT] = rotatefactors(coeff);
-    
-    axes('position',[position_x3(1), position_y3(1), panel_width1, panel_height1]);
-    plot(score(subsample_v,1),score(subsample_v,2),'.')
-    %     xlim([-1 1])
-    %     ylim([-1 1])
-    xlabel('PC1');
-    ylabel('PC2');
-    
-    axes('position',[position_x3(2), position_y3(1), panel_width1, panel_height1]);
-    plot(score(subsample_v,1),score(subsample_v,3),'.')
-    %     xlim([-1 1])
-    %     ylim([-1 1])
-    xlabel('PC1');
-    ylabel('PC3');
-    title('PCA on x, y, onset');
-    
-    axes('position',[position_x3(3), position_y3(1), panel_width1, panel_height1]);
-    plot(score(subsample_v,2),score(subsample_v,3),'.')
-    %     xlim([-1 1])
-    %     ylim([-1 1])
-    xlabel('PC2');
-    ylabel('PC3');
-    
-    %% PCA on x,y,linear vel,angular vel, onset
-    T_selected=T(:,[1,4,6,12,14]);
-    X=table2array(T_selected);
-    X(isnan(X))=0;
-    X=zscore(X,0,1);
-    [coeff,score,~, ~, explained] = pca(X);
-    %        [U,S,V]  = svd(X);
-    %     [L1,TT] = rotatefactors(coeff);
-    
-    axes('position',[position_x3(1), position_y3(2), panel_width1, panel_height1]);
-    plot(score(subsample_v,1),score(subsample_v,2),'.')
-    %     xlim([-1 1])
-    %     ylim([-1 1])
-    xlabel('PC1');
-    ylabel('PC2');
-    
-    axes('position',[position_x3(2), position_y3(2), panel_width1, panel_height1]);
-    plot(score(subsample_v,1),score(subsample_v,3),'.')
-    %     xlim([-1 1])
-    %     ylim([-1 1])
-    xlabel('PC1');
-    ylabel('PC3');
-    title('PCA on x, y, linear velocity, angular velocity, onset');
-    
-    axes('position',[position_x3(3), position_y3(2), panel_width1, panel_height1]);
-    plot(score(subsample_v,2),score(subsample_v,3),'.')
-    %     xlim([-1 1])
-    %     ylim([-1 1])
-    xlabel('PC2');
-    ylabel('PC3');
-    
     
     
     %     histogram(score(:,3))
     if isempty(dir(dir_save_figure))
         mkdir (dir_save_figure)
     end
-    filename=['kinematics_' key.lick_direction];
+    filename=['kinematics_' key.lick_direction '_lick' num2str(key.lick_number)];
     figure_name_out=[ dir_save_figure filename];
     eval(['print ', figure_name_out, ' -dtiff -cmyk -r300']);
     %     eval(['print ', figure_name_out, ' -painters -dpdf -cmyk -r200']);
     
-    clf;
-end
+
+
 

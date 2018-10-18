@@ -1,4 +1,4 @@
-function fn_plot_stability_time (TUNING, i_u, tnum, tuning_param_name, oneDnum, key, tuning_param_label)
+function fn_plot_stability_time_zscore (TUNING, i_u, tnum, tuning_param_name, oneDnum, key, tuning_param_label)
 Param = struct2table(fetch (ANL.Parameters,'*'));
 t_go = Param.parameter_value{(strcmp('t_go',Param.parameter_name))};
 t_chirp1 = Param.parameter_value{(strcmp('t_chirp1',Param.parameter_name))};
@@ -23,17 +23,15 @@ key_time_dynamics=key;
 key_time_dynamics.unit_uid=TUNING{tnum}.oneD{oneDnum}.unit_uid(i_u);
 key_time_dynamics.tuning_param_name=tuning_param_name{oneDnum};
 
-t=fetchn(ANL.UnitTongue1DTuning*EPHYS.Unit & key_time_dynamics,'time_window_start',  'ORDER BY time_window_start');
+t=fetchn(ANL.UnitTongue1DTuningZscore*EPHYS.Unit & key_time_dynamics,'time_window_start',  'ORDER BY time_window_start');
 
-rel_tuning = ANL.UnitTongue1DTuning & key_time_dynamics;
-
-% if strcmp(key.lick_direction,'all')
-%     rel_tuning = ANL.UnitTongue1DTuningZscore;
-% elseif strcmp(key.lick_direction,'left')
-%     rel_tuning = ANL.UnitTongue1DTuningLRseparateZscore& key_time_dynamics;
-% elseif strcmp(key.lick_direction,'right')
-%     rel_tuning = ANL.UnitTongue1DTuningLRseparateZscore& key_time_dynamics;
-% end
+if strcmp(key.lick_direction,'all')
+    rel_tuning = ANL.UnitTongue1DTuningZscore& key_time_dynamics;
+elseif strcmp(key.lick_direction,'left')
+    rel_tuning = ANL.UnitTongue1DTuningLRseparateZscore& key_time_dynamics;
+elseif strcmp(key.lick_direction,'right')
+    rel_tuning = ANL.UnitTongue1DTuningLRseparateZscore& key_time_dynamics;
+end
 
 
 r_t=fetchn(rel_tuning&(EPHYS.Unit & key_time_dynamics),'stability_odd_even_corr_r',  'ORDER BY time_window_start');

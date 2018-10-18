@@ -1,0 +1,31 @@
+function fn_plot_regression_decoding_time_lick_number (rel, key, tuning_param_label, flag_exlude_1st_lick)
+
+rel=rel & (ANL.RegressionDecodingSignificant&key);
+
+
+t=fetch1(rel,'t_for_decoding','LIMIT 1');
+max_lick=max(fetchn(rel& key,'lick_number'));
+
+hold on;
+c=colormap(jet);
+num_licks_2plot=min([10,max_lick]);
+
+if flag_exlude_1st_lick==1
+    start_lick=2;
+else
+    start_lick=1;
+end
+
+for i_l=start_lick:1:num_licks_2plot
+    key.lick_number=i_l;
+    rsq_linear_regression_t  = cell2mat(fetchn(rel*EXP.SessionID & key,'rsq_linear_regression_t','ORDER BY session_uid'));
+    rsq_mean_licks(i_l,:)=nanmean(rsq_linear_regression_t,1);
+    plot(t,nanmean(rsq_linear_regression_t,1),'Color',c(i_l* floor(64/num_licks_2plot),:))
+end
+plot(t,nanmean(rsq_mean_licks,1),'Color',[0 0 0],'LineWidth',3)
+xlim([t(1),t(end)]);
+
+xlabel('Time (s)');
+ylabel('R^2')
+title(sprintf('%s, %s licks\n', tuning_param_label, key.lick_direction));
+

@@ -1,10 +1,10 @@
-function analysis_tongue_tuning()
+function analysis_tongue_tuning_zscore()
 close all;
 
 dir_root = 'Z:\users\Arseny\Projects\SensoryInput\SiProbeRecording\';
-key.tuning_param_name='lick_horizoffset';
+key.tuning_param_name='lick_horizoffset_relative';
 lick_direction= 'right';  %ANL.LickDirectionType
-dir_save_figure = [dir_root 'Results\video_tracking\cell_tuning\' key.tuning_param_name '\' lick_direction '\'];
+dir_save_figure = [dir_root 'Results\video_tracking\tuning_zscore2\' key.tuning_param_name '\' lick_direction '\'];
 
 flag_smooth_1D_display=0;
 flag_smooth_2D_display=1;
@@ -70,14 +70,14 @@ key.lick_direction=lick_direction;
 key_time1.time_window_start=round(-0.2,4);
 key_time2.time_window_start=round(0,4);
 if strcmp(lick_direction,'all')
-    rel1= (ANL.UnitTongue1DTuning *ANL.UnitTongue1DTuningSignificanceGo & key & key_time1  & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.05' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
-    rel2=(ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo & key & key_time2 & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.05')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel1= (ANL.UnitTongue1DTuningZscore *ANL.UnitTongue1DTuningSignificanceZscore & key & key_time1  & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.05' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel2=(ANL.UnitTongue1DTuningZscore*ANL.UnitTongue1DTuningSignificanceZscore & key & key_time2 & 'number_of_trials>100' & 'total_number_of_spikes_window>100' & 'pvalue_si_1d<=0.05')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
 elseif strcmp(lick_direction,'left')
-    rel1= (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo & key & key_time1  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
-    rel2=(ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo & key & key_time2  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel1= (ANL.UnitTongue1DTuningLRseparateZscore*ANL.UnitTongue1DTuningSignificanceLRseparateZscore & key & key_time1  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel2=(ANL.UnitTongue1DTuningLRseparateZscore*ANL.UnitTongue1DTuningSignificanceLRseparateZscore & key & key_time2  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
 elseif strcmp(lick_direction,'right')
-    rel1= (ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo & key & key_time1  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
-    rel2=(ANL.UnitTongue1DTuning*ANL.UnitTongue1DTuningSignificanceGo & key & key_time2  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel1= (ANL.UnitTongue1DTuningLRseparateZscore*ANL.UnitTongue1DTuningSignificanceLRseparateZscore & key & key_time1  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05' )  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
+    rel2=(ANL.UnitTongue1DTuningLRseparateZscore*ANL.UnitTongue1DTuningSignificanceLRseparateZscore & key & key_time2  & 'number_of_trials>50' & 'total_number_of_spikes_window>50' & 'pvalue_si_1d<=0.05')  & (EPHYS.UnitCellType*EPHYS.UnitPosition & key ) ;
 end
 
 key_1D=key;
@@ -90,7 +90,7 @@ UNITS=struct2table(fetch(relSignif*EPHYS.UnitPosition*EPHYS.UnitCellType ,'*','O
 time_window_start=([-0.2, 0]);
 % time_window_end=([0, 0.2]);
 
-tuning_param_name_1D{1}='lick_horizoffset';
+tuning_param_name_1D{1}='lick_horizoffset_relative';
 tuning_param_name_1D{2}='lick_peak_x';
 tuning_param_name_1D{3}='lick_rt_video_onset';
 
@@ -101,8 +101,8 @@ tuning_param_label{3}='Reaction time';
 
 
 
-tuning_param_name_2D.x{1}='lick_horizoffset';
-tuning_param_name_2D.x{2}='lick_horizoffset';
+tuning_param_name_2D.x{1}='lick_horizoffset_relative';
+tuning_param_name_2D.x{2}='lick_horizoffset_relative';
 % tuning_param_name_2D.x{3}='lick_yaw';
 tuning_param_name_2D.x{3}='lick_rt_video_onset';
 
@@ -121,17 +121,17 @@ tuning_param_label_2D.y{3}='AP';
 
 
 if strcmp(key.lick_direction,'all')
-    rel_tuning = ANL.UnitTongue1DTuningZscore * ANL.UnitTongue1DTuningSignificanceGo;
-    rel_reconstruction =  ANL.UnitTongue1DTuningReconstruction * ANL.UnitTongue1DTuningSignificanceGo;
-    rel_tuning_2D= ANL.UnitTongue2DTuning & key;
+    rel_tuning = ANL.UnitTongue1DTuningZscore*ANL.UnitTongue1DTuningSignificanceZscore;
+    rel_reconstruction =  ANL.UnitTongue1DTuningReconstructionZscore *ANL.UnitTongue1DTuningSignificanceZscore;
+    rel_tuning_2D=ANL.UnitTongue2DTuningZscore & key;
 elseif strcmp(key.lick_direction,'left')
-    rel_tuning = ANL.UnitTongue1DTuning * ANL.UnitTongue1DTuningSignificanceGo;
-    rel_reconstruction =  ANL.UnitTongue1DTuningReconstruction * ANL.UnitTongue1DTuningSignificanceGo;
-    rel_tuning_2D=ANL.UnitTongue2DTuning & key;
+    rel_tuning = ANL.UnitTongue1DTuningLRseparateZscore*ANL.UnitTongue1DTuningSignificanceLRseparateZscore;
+    rel_reconstruction =  ANL.UnitTongue1DTuningReconstructionLRseparateZscore *ANL.UnitTongue1DTuningSignificanceLRseparateZscore;
+    rel_tuning_2D=ANL.UnitTongue2DTuningZscore & key;
 elseif strcmp(key.lick_direction,'right')
-    rel_tuning = ANL.UnitTongue1DTuning * ANL.UnitTongue1DTuningSignificanceGo;
-    rel_reconstruction =  ANL.UnitTongue1DTuningReconstruction * ANL.UnitTongue1DTuningSignificanceGo;
-    rel_tuning_2D=ANL.UnitTongue2DTuning & key;
+    rel_tuning = ANL.UnitTongue1DTuningLRseparateZscore*ANL.UnitTongue1DTuningSignificanceLRseparateZscore;
+    rel_reconstruction =  ANL.UnitTongue1DTuningReconstructionLRseparateZscore *ANL.UnitTongue1DTuningSignificanceLRseparateZscore;
+    rel_tuning_2D=ANL.UnitTongue2DTuningZscore & key;
 end
 
 
@@ -207,14 +207,14 @@ for i_u=1:1:size(TUNING{1}.oneD{1},1)
     tnum=2; yyaxis right;
     fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key, tuning_param_label)
     %%%
-%     y1(1)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
-%     [yl(1,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
-%     %%%
-%     yy1(1)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
-%     [yyl(1,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
+    y1(1)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
+    [yl(1,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
+    %%%
+    yy1(1)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
+    [yyl(1,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
     %%%
     axes('position',[position_x1(oneDnum), position_y1(4), panel_width1, panel_height1]);
-    fn_plot_stability_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, tuning_param_label)
+    fn_plot_stability_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, tuning_param_label)
     
     
     oneDnum=2;
@@ -225,14 +225,14 @@ for i_u=1:1:size(TUNING{1}.oneD{1},1)
     tnum=2; yyaxis right;
     fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key, tuning_param_label)
     %%%
-%     y1(2)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
-%     [yl(2,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
-%     %%%
-%     yy1(2)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
-%     [yyl(2,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
+    y1(2)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
+    [yl(2,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
+    %%%
+    yy1(2)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
+    [yyl(2,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
     %%%
     axes('position',[position_x1(oneDnum), position_y1(4), panel_width1, panel_height1]);
-    fn_plot_stability_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, tuning_param_label)
+    fn_plot_stability_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, tuning_param_label)
     
     
     oneDnum=3;
@@ -243,22 +243,22 @@ for i_u=1:1:size(TUNING{1}.oneD{1},1)
     tnum=2; yyaxis right;
     fn_plot_1Dtuning (TUNING, i_u, tnum, tuning_param_name_1D, time_window_start, oneDnum,flag_smooth_1D_display,key, tuning_param_label)
     %%%
-%     y1(3)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
-%     [yl(3,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
-%     %%%
-%     yy1(3)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
-%     [yyl(3,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
+    y1(3)=axes('position',[position_x1(oneDnum), position_y1(2), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=2;
+    [yl(3,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
+    %%%
+    yy1(3)=axes('position',[position_x1(oneDnum), position_y1(3), panel_width1, panel_height1]);  flag_per_spike_or_per_sec=1;
+    [yyl(3,:)]=fn_plot_si_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, flag_per_spike_or_per_sec, tuning_param_label);
     %%%
     axes('position',[position_x1(oneDnum), position_y1(4), panel_width1, panel_height1]);
-    fn_plot_stability_time (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, tuning_param_label)
+    fn_plot_stability_time_zscore (TUNING, i_u, tnum, tuning_param_name_1D, oneDnum, key, tuning_param_label)
     
-%     set(y1(1),'Ylim',[0 max(yl(:,2))]);
-%     set(y1(2),'Ylim',[0 max(yl(:,2))]);
-%     set(y1(3),'Ylim',[0 max(yl(:,2))]);
-%     
-%     set(yy1(1),'Ylim',[0 max(yyl(:,2))]);
-%     set(yy1(2),'Ylim',[0 max(yyl(:,2))]);
-%     set(yy1(3),'Ylim',[0 max(yyl(:,2))]);
+    set(y1(1),'Ylim',[0 max(yl(:,2))]);
+    set(y1(2),'Ylim',[0 max(yl(:,2))]);
+    set(y1(3),'Ylim',[0 max(yl(:,2))]);
+    
+    set(yy1(1),'Ylim',[0 max(yyl(:,2))]);
+    set(yy1(2),'Ylim',[0 max(yyl(:,2))]);
+    set(yy1(3),'Ylim',[0 max(yyl(:,2))]);
     
 %     if strcmp(lick_direction,'all')
 %         
@@ -327,23 +327,23 @@ for i_u=1:1:size(TUNING{1}.oneD{1},1)
             else
                 axes('position',[position_x2(oneDnum), position_y2(recNum), panel_width2, panel_height2]);
                 tnum=1;  yyaxis left;
-                fn_plot_1DtuningReconstruction (TUNING, TUNING_RECON, i_u, tnum, tuning_param_name_1D,tuning_param_name_1D, time_window_start, oneDnum,recNum, flag_smooth_1D_display,key, tuning_param_label)
+                fn_plot_1DtuningReconstruction (TUNING_RECON, i_u, tnum, tuning_param_name_1D,tuning_param_name_1D, time_window_start, oneDnum,recNum, flag_smooth_1D_display,key, tuning_param_label)
                 tnum=2; yyaxis right;
-                fn_plot_1DtuningReconstruction (TUNING, TUNING_RECON, i_u, tnum, tuning_param_name_1D,tuning_param_name_1D, time_window_start, oneDnum,recNum, flag_smooth_1D_display,key, tuning_param_label)
+                fn_plot_1DtuningReconstruction (TUNING_RECON, i_u, tnum, tuning_param_name_1D,tuning_param_name_1D, time_window_start, oneDnum,recNum, flag_smooth_1D_display,key, tuning_param_label)
             end
         end
     end
     
-%     %% Regression
-%     % R2 and significance
-%     for oneDnum=1:1:numel(tuning_param_name_1D)
-%         key_1D.tuning_param_name=tuning_param_name_1D{oneDnum};
-%         axxx(oneDnum) = axes('position',[position_x1(oneDnum), position_y1(5), panel_width1, panel_height1]);
-%         [axxx_yl(oneDnum,:)] =fn_plot_regression_time (key_1D,key, TUNING, i_u, oneDnum, tnum, tuning_param_name_1D, tuning_param_label);
-%     end
-%     set(axxx(1),'Ylim',[0 max(axxx_yl(:,2))]);
-%     set(axxx(2),'Ylim',[0 max(axxx_yl(:,2))]);
-%     set(axxx(3),'Ylim',[0 max(axxx_yl(:,2))]);
+    %% Regression
+    % R2 and significance
+    for oneDnum=1:1:numel(tuning_param_name_1D)
+        key_1D.tuning_param_name=tuning_param_name_1D{oneDnum};
+        axxx(oneDnum) = axes('position',[position_x1(oneDnum), position_y1(5), panel_width1, panel_height1]);
+        [axxx_yl(oneDnum,:)] =fn_plot_regression_time_zscore (key_1D,key, TUNING, i_u, oneDnum, tnum, tuning_param_name_1D, tuning_param_label);
+    end
+    set(axxx(1),'Ylim',[0 max(axxx_yl(:,2))]);
+    set(axxx(2),'Ylim',[0 max(axxx_yl(:,2))]);
+    set(axxx(3),'Ylim',[0 max(axxx_yl(:,2))]);
     
    
     %% Regression examples
